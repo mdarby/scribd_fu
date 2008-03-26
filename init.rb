@@ -1,2 +1,4 @@
 require 'scribd_fu'
-ActiveRecord::Base.send(:include, MDarby::Scribd_fu)
+require 'scribd_fu_helper'
+ActiveRecord::Base.send(:include, Scribd_fu)
+ActionView::Base.send(:include, Scribd_fu_Helper)
