@@ -1,14 +1,43 @@
 Scribd_fu
 ===================
 
-This plugin will streamline interactions with the Scribd (scribd.com) service.
-Check this space for something fun soon.
+Scribd_fu
+A Ruby on Rails plugin that streamlines interaction with the Scribd service (scribd.com), and even works with Attachment_fu!
 
+What it does
+Scribd_fu hides out in the shadows like a document converting ninja, just waiting to process your data into a convenient Flash format (like YouTube) with the help of the black majick of Scribd.com. Imagine imbedding huge documents right inline with your web UI, no downloading, no necessary programs on the client side to view your data. It’s pretty damned cool.
 
-Example
-=======
+Requirements
+Scribd_fu requires the wicked awesome Attachment_fu plugin. You probably already have it installed.
 
-Example goes here.
+How to Install
+	cd vendor/plugins && git clone git://github.com/mdarby/scribd_fu.git
 
+How to Use
+	Enter the below line into any model that you’d like to Scribdify ##
+		acts_as_scribd_document
+
+	Add the following fields into a new migration for the target model (and update your schema!): ##
+		t.integer :scribd_id
+		t.string :scribd_access_key
+
+	Sign up for Scribd (it’s totally free)
+
+	Copy the vendor/plugins/scribd.yml.example file to config/scribd.yml and fill out with your Scribd login credentials
+
+	Now, when you upload a file that is convertible in the Scribd system, Scribd_fu will automatically handle the CRUD for you. No muss, no fuss.
+
+	To view a Scribd document, just throw the below code into your view (where @document is an object of your Scribd/Attachment_fu model): ##
+		<%= display_scribd(@document) %>
+
+	That’s it!
+
+Further Info
+You can make your Scribd documents private or public, to choose, just modify the scribd.yml file and enter ‘private’ or ‘public’ in the ‘access’ key.
+
+About the Author
+My name is Matt Darby. I’m a 28 year old professional Web Developer and IT Manager. I am the IT Manager and Lead Web Developer at Dynamix Engineering and recently earned a Master’s Degree in Computer Science from Franklin University in Columbus, OH.
+
+Feel free to check out my blog (http://blog.matt-darby.com) or to recommend me on workingwithrails.com
 
 Copyright (c) 2008 Matt Darby (matt@matt-darby.com), released under the MIT license
