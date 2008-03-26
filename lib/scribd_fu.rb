@@ -16,7 +16,7 @@ module Scribd_fu
     def self.extended(base)
       base.class_inheritable_accessor :scribd_options
       base.before_destroy :destroy_scribd_document
-      base.after_create :upload_to_scribd
+      base.after_save :upload_to_scribd
     end
 
     def validates_as_scribd_document
@@ -91,8 +91,8 @@ module Scribd_fu
     end
 
     def upload_to_scribd
-      if scribdable?
-        if resource = scribd_login.upload(:file => "#{filename}", :access => scribd_config[:access])
+      if scribdable? and self.scribd_id.blank?
+        if resource = scribd_login.upload(:file => "#{public_filename}", :access => scribd_config[:access])
           logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully converted to iPaper."
     
           self.scribd_id         = resource.doc_id
