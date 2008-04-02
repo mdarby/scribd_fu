@@ -51,7 +51,7 @@ module Scribd_fu
           Scribd::API.instance.key    = @@scribd_config[:key].to_s.strip
           Scribd::API.instance.secret = @@scribd_config[:secret].to_s.strip
 
-          @@scribd_login = Scribd::User.login @@scribd_config[:user].strip, @@scribd_config[:password].strip
+          @@scribd_login = Scribd::User.login @@scribd_config[:user].to_s.strip, @@scribd_config[:password].to_s.strip
         end
       rescue
         puts "Config file not found, or your credentials are b0rked!"
