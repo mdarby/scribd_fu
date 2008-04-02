@@ -48,8 +48,8 @@ module Scribd_fu
           @@scribd_config = YAML.load_file("#{RAILS_ROOT}/config/scribd.yml").symbolize_keys
 
           # Ensure we can connect to the Service
-          Scribd::API.instance.key    = @@scribd_config[:key].strip
-          Scribd::API.instance.secret = @@scribd_config[:secret].strip
+          Scribd::API.instance.key    = @@scribd_config[:key].to_s.strip
+          Scribd::API.instance.secret = @@scribd_config[:secret].to_s.strip
 
           @@scribd_login = Scribd::User.login @@scribd_config[:user].strip, @@scribd_config[:password].strip
         end
@@ -92,7 +92,7 @@ module Scribd_fu
 
     def upload_to_scribd
       if scribdable? and self.scribd_id.blank?
-        if resource = scribd_login.upload(:file => "#{public_filename}", :access => scribd_config[:access])
+        if resource = scribd_login.upload(:file => "#{full_filename}", :access => scribd_config[:access])
           logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully converted to iPaper."
     
           self.scribd_id         = resource.doc_id
