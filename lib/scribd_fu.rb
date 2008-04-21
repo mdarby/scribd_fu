@@ -26,8 +26,8 @@ module Scribd_fu
   end
   
   module InstanceMethods
-    @@content_types = ['application/pdf', 'image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg', 'application/msword', 'application/mspowerpoint', 
-                        'application/excel', 'application/postscript', 'text/plain', 'application/rtf', 'application/vnd.oasis.opendocument.text', 'vnd.oasis.opendocument.presentation',
+    @@content_types = ['application/pdf', 'image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg', 'application/msword', 'application/mspowerpoint', 'application/vnd.ms-powerpoint', 
+                        'application/excel', 'application/vnd.ms-excel', 'application/postscript', 'text/plain', 'application/rtf', 'application/vnd.oasis.opendocument.text', 'vnd.oasis.opendocument.presentation',
                         'application/vnd.sun.xml.writer', 'application/vnd.sun.xml.impress']
                         
     mattr_reader :content_types
