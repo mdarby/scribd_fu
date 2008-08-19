@@ -48,10 +48,10 @@ module Scribd_fu
           @@scribd_config = YAML.load_file("#{RAILS_ROOT}/config/scribd.yml").symbolize_keys
 
           # Ensure we can connect to the Service
-          Scribd::API.instance.key    = @@scribd_config[:key].to_s.strip
-          Scribd::API.instance.secret = @@scribd_config[:secret].to_s.strip
+          Scribd::API.instance.key    = @@scribd_config[:scribd]['key'].to_s.strip
+          Scribd::API.instance.secret = @@scribd_config[:scribd]['secret'].to_s.strip
 
-          @@scribd_login = Scribd::User.login @@scribd_config[:user].to_s.strip, @@scribd_config[:password].to_s.strip
+          @@scribd_login = Scribd::User.login @@scribd_config[:scribd]['user'].to_s.strip, @@scribd_config[:scribd]['password'].to_s.strip
         end
       rescue
         puts "Config file not found, or your credentials are b0rked!"
@@ -92,7 +92,7 @@ module Scribd_fu
 
     def upload_to_scribd
       if scribdable? and self.scribd_id.blank?
-        if resource = scribd_login.upload(:file => "#{full_filename}", :access => scribd_config[:access])
+        if resource = scribd_login.upload(:file => "#{full_filename}", :access => scribd_config[:scribd]['access'])
           logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully converted to iPaper."
     
           self.scribd_id         = resource.doc_id
