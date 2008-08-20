@@ -93,15 +93,38 @@ module Scribd_fu
     def upload_to_scribd
       if scribdable? and self.scribd_id.blank?
         if resource = scribd_login.upload(:file => "#{full_filename}", :access => scribd_config[:scribd]['access'])
-          logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully converted to iPaper."
+          logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully uploaded for conversion to iPaper."
     
           self.scribd_id         = resource.doc_id
           self.scribd_access_key = resource.access_key
     
           save
         else
-          logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} iPaper conversion failed!"
+          logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} upload failed!"
         end
+      end
+    end
+
+    # Responds true if the document has been converted.
+    def converted?
+      scribd_document && scribd_document.conversion_status =~ /^DISPLAYABLE|DONE$/
+    end
+
+    # Responds true if and only if there is a conversion error while converting
+    # to iPaper. Notably, this means that if this model does not refer to a
+    # valid document, this method still returns false. scribd_attributes_valid?
+    # should be used to determine if the model is a valid document.
+    def conversion_error?
+      scribd_document && scribd_document.conversion_status == 'ERROR'
+    end
+
+    # Responds the Scribd::Document associated with this model, or nil if it
+    # does not exist.
+    def scribd_document
+      begin
+        scribd_login.find_document(scribd_id)
+      rescue Scribd::ResponseError # at minimum, the document was not found
+        nil
       end
     end
   end
