@@ -121,11 +121,9 @@ module Scribd_fu
     # Responds the Scribd::Document associated with this model, or nil if it
     # does not exist.
     def scribd_document
-      begin
-        scribd_login.find_document(scribd_id)
-      rescue Scribd::ResponseError # at minimum, the document was not found
-        nil
-      end
+      @scribd_document ||= scribd_login.find_document(scribd_id)
+    rescue Scribd::ResponseError # at minimum, the document was not found
+      nil
     end
   end
 
