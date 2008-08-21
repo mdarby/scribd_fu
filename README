@@ -37,6 +37,13 @@ Copy the vendor/plugins/scribd.yml.example file to config/scribd.yml and fill ou
 
 Now, when you upload a file that is convertible in the Scribd system, Scribd_fu will automatically handle the CRUD for you. No muss, no fuss.
 
+Note that scribd_fu will only upload the file to scribd. Scribd then has to
+convert it to their iPaper format. Usually this is a pretty fast operation, but
+if you want to be safe or have a contingency plan in case someone tries to
+access the document and it isn't converted yet, the set of methods
+conversion_complete?, conversion_successful?, and conversion_error? can be used
+to determine the current conversion status of the document.
+
 To view a Scribd document, just throw the below code into your view (where @document is an object of your Scribd/Attachment_fu model):
 <%= display_scribd(@document) %>
 That’s it!

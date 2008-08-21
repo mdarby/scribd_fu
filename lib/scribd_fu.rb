@@ -1,17 +1,17 @@
 module Scribd_fu
-  
+
   def self.included(base)
     base.extend ActsAsScribdObject
-  end 
+  end
 
   module ActsAsScribdObject
     def acts_as_scribd_document(options = {})
       class_eval <<-END
-        include Scribd_fu::InstanceMethods    
+        include Scribd_fu::InstanceMethods
       END
     end
   end
-  
+
   module ClassMethods
     def self.extended(base)
       base.class_inheritable_accessor :scribd_options
@@ -24,17 +24,17 @@ module Scribd_fu
       validate              :scribd_attributes_valid?
     end
   end
-  
+
   module InstanceMethods
-    @@content_types = ['application/pdf', 'image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg', 'application/msword', 'application/mspowerpoint', 'application/vnd.ms-powerpoint', 
+    @@content_types = ['application/pdf', 'image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg', 'application/msword', 'application/mspowerpoint', 'application/vnd.ms-powerpoint',
                         'application/excel', 'application/vnd.ms-excel', 'application/postscript', 'text/plain', 'application/rtf', 'application/vnd.oasis.opendocument.text', 'vnd.oasis.opendocument.presentation',
                         'application/vnd.sun.xml.writer', 'application/vnd.sun.xml.impress']
-                        
+
     mattr_reader :content_types
 
     def self.included(base)
       base.extend ClassMethods
-      
+
       mattr_reader :scribd_config, :scribd_login
 
       begin
@@ -57,7 +57,7 @@ module Scribd_fu
         puts "Config file not found, or your credentials are b0rked!"
         exit
       end
-    end   
+    end
 
     def scribd_attributes_valid?
       [:scribd_id, :scribd_access_id].each do |attr_name|
@@ -94,10 +94,10 @@ module Scribd_fu
       if scribdable? and self.scribd_id.blank?
         if resource = scribd_login.upload(:file => "#{full_filename}", :access => scribd_config[:scribd]['access'])
           logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully uploaded for conversion to iPaper."
-    
+
           self.scribd_id         = resource.doc_id
           self.scribd_access_key = resource.access_key
-    
+
           save
         else
           logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} upload failed!"
@@ -105,15 +105,32 @@ module Scribd_fu
       end
     end
 
+    # Responds true if the conversion is complete -- note that this gives no
+    # indication as to whether the conversion had an error or was succesful,
+    # just that the conversion completed.
+    #
+    # Note that this method still returns false if the model does not refer to a
+    # valid document.  scribd_attributes_valid? should be used to determine the
+    # validity of the document.
+    def conversion_complete?
+      scribd_document && scribd_document.conversion_status != 'PROCESSING'
+    end
+
     # Responds true if the document has been converted.
-    def converted?
+    #
+    # Note that this method still returns false if the model does not refer to a
+    # valid document.  scribd_attributes_valid? should be used to determine the
+    # validity of the document.
+    def conversion_successful?
       scribd_document && scribd_document.conversion_status =~ /^DISPLAYABLE|DONE$/
     end
 
-    # Responds true if and only if there is a conversion error while converting
-    # to iPaper. Notably, this means that if this model does not refer to a
-    # valid document, this method still returns false. scribd_attributes_valid?
-    # should be used to determine if the model is a valid document.
+    # Responds true if there was a conversion error while converting
+    # to iPaper.
+    #
+    # Note that this method still returns false if the model does not refer to a
+    # valid document.  scribd_attributes_valid? should be used to determine the
+    # validity of the document.
     def conversion_error?
       scribd_document && scribd_document.conversion_status == 'ERROR'
     end
