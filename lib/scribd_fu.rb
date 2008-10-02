@@ -56,8 +56,7 @@ module Scribd_fu
           @@scribd_login = Scribd::User.login @@scribd_config[:scribd]['user'].to_s.strip, @@scribd_config[:scribd]['password'].to_s.strip
         end
       rescue
-        puts "Config file not found, or your credentials are b0rked!"
-        exit
+        raise "config/scribd.yml file not found, or your credentials are incorrect..."
       end
     end
 
