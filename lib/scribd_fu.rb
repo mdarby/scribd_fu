@@ -103,6 +103,18 @@ module Scribd_fu
       end
     end
 
+    # Sample of use in a view:
+    # image_tag(@attachment).thumbnail_url, :alt => @attachment.name)
+    def thumbnail_url
+      scribd_document ? scribd_document.thumbnail_url : nil
+    end
+
+    # Sample of use in a controller:
+    # render :inline => @attachment.thumbnail_file, :content_type => 'image/jpeg'
+    def thumbnail_file
+      scribd_document ? open(scribd_document.thumbnail_url).read : nil
+    end
+
     # Responds true if the conversion is complete -- note that this gives no
     # indication as to whether the conversion had an error or was succesful,
     # just that the conversion completed.
