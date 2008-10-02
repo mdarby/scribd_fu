@@ -81,10 +81,8 @@ module Scribd_fu
     end
 
     def destroy_scribd_document
-      unless scribd_id.blank?
-        document = scribd_login.find_document(scribd_id)
-
-        if document.destroy
+      if scribd_document
+        if scribd_document.destroy
           logger.info "[Scribd_fu] #{Time.now.rfc2822}: Removing Object #{id} successful"
         else
           logger.info "[Scribd_fu] #{Time.now.rfc2822}: Removing Object #{id} failed!"
@@ -105,6 +103,18 @@ module Scribd_fu
           logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} upload failed!"
         end
       end
+    end
+
+    # Sample of use in a view:
+    # image_tag(@attachment).thumbnail_url, :alt => @attachment.name)
+    def thumbnail_url
+      scribd_document ? scribd_document.thumbnail_url : nil
+    end
+
+    # Sample of use in a controller:
+    # render :inline => @attachment.thumbnail_file, :content_type => 'image/jpeg'
+    def thumbnail_file
+      scribd_document ? open(scribd_document.thumbnail_url).read : nil
     end
 
     # Responds true if the conversion is complete -- note that this gives no
