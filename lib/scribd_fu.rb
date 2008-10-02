@@ -79,10 +79,8 @@ module Scribd_fu
     end
 
     def destroy_scribd_document
-      unless scribd_id.blank?
-        document = scribd_login.find_document(scribd_id)
-
-        if document.destroy
+      if scribd_document
+        if scribd_document.destroy
           logger.info "[Scribd_fu] #{Time.now.rfc2822}: Removing Object #{id} successful"
         else
           logger.info "[Scribd_fu] #{Time.now.rfc2822}: Removing Object #{id} failed!"
