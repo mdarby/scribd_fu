@@ -93,7 +93,12 @@ module Scribd_fu
 
     def upload_to_scribd
       if scribdable? and self.scribd_id.blank?
-        if resource = scribd_login.upload(:file => "#{full_filename}", :access => scribd_config[:scribd]['access'])
+        scribd_access =  scribd_config[:scribd]['access']
+        unless self.scribd_public.nil?
+          scribd_access = self.scribd_public ? 'public' : 'private'
+        end
+        
+        if resource = scribd_login.upload(:file => "#{full_filename}", :access => scribd_access)
           logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully uploaded for conversion to iPaper."
 
           self.scribd_id         = resource.doc_id
