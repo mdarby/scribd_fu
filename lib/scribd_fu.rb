@@ -56,7 +56,7 @@ module Scribd_fu
           @@scribd_login = Scribd::User.login @@scribd_config[:scribd]['user'].to_s.strip, @@scribd_config[:scribd]['password'].to_s.strip
         end
       rescue
-        raise "config/scribd.yml file not found, or your credentials are incorrect..."
+        raise "config/scribd.yml file not found, or your credentials are incorrect."
       end
     end
 
@@ -89,14 +89,20 @@ module Scribd_fu
       end
     end
 
+    def access_level
+      if self.respond_to?(:is_public) && self.is_public != nil
+        scribd_access = self.is_public ? 'public' : 'private'
+      else
+        scribd_access = scribd_config[:scribd]['access']
+      end
+      
+      scribd_access
+    end
+    
     def upload_to_scribd
       if scribdable? and self.scribd_id.blank?
-        scribd_access =  scribd_config[:scribd]['access']
-        unless self.scribd_public.nil?
-          scribd_access = self.scribd_public ? 'public' : 'private'
-        end
         
-        if resource = scribd_login.upload(:file => "#{full_filename}", :access => scribd_access)
+        if resource = scribd_login.upload(:file => "#{full_filename}", :access => access_level)
           logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully uploaded for conversion to iPaper."
 
           self.scribd_id         = resource.doc_id

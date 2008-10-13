@@ -1,0 +1,75 @@
+h1. Scribd_fu
+
+A Ruby on Rails plugin that streamlines interaction with the Scribd service (scribd.com), and even works with Attachment_fu!
+
+
+h2. What it does
+
+Scribd_fu hides out in the shadows like a document converting ninja, just waiting to process your data into a convenient Flash format (like YouTube) with the help of the black majick of Scribd.com. Imagine imbedding huge documents right inline with your web UI, no downloading, no necessary programs on the client side to view your data. It’s pretty damned cool.
+
+
+h2. Requirements
+
+Scribd_fu requires the wicked awesome Attachment_fu plugin. You probably already have it installed.
+You also need the rscribd gem (sudo gem install rscribd will do the trick)
+
+
+h2. How to Install & Use
+
+# Install the rscribd gem
+<pre><code>
+gem install rscribd
+</code></pre>
+# Install the plugin
+<pre><code>
+./script/plugin install git://github.com/mdarby/scribd_fu.git
+</code></pre>
+# Enter the below line into any attachment_fu-using model that you’d like to Scribdify
+<pre><code>
+acts_as_scribd_document
+</code></pre>
+# Add the following fields into a new migration for the target model (and update your schema!):
+<pre><code>
+t.integer :scribd_id
+t.string :scribd_access_key
+t.boolean :is_public
+</code></pre>
+# Sign up for Scribd (it’s totally free)
+# Copy the vendor/plugins/scribd.yml.example file to config/scribd.yml and fill out with your Scribd login credentials
+# Now, when you upload a file that is convertible in the Scribd system, Scribd_fu will automatically handle the CRUD for you. No muss, no fuss.
+
+
+h2. Access
+
+You can set the default access on all documents by setting the 'access' key in the scribd.yml file to either 'private' or 'public'
+
+You can also override the default access level and control access on a per-document basis by setting the 'is_public' attribute to either true or false. If this column is not defined, the default option in the scribd.yml will be used.
+
+Please note that setting the access level only works before the document is initially uploaded to Scribd.
+
+
+h2. Displaying
+
+To view a Scribd document, just throw the below code into your view (where @document is an object of your Scribd/Attachment_fu model):
+<pre><code>
+<%= display_scribd(@document) %>
+</code></pre>
+
+That’s it!
+
+
+h2. Notes
+
+Note that scribd_fu will only upload the file to scribd. Scribd then has to
+convert it to their iPaper format. Usually this is a pretty fast operation, but
+if you want to be safe or have a contingency plan in case someone tries to
+access the document and it isn't converted yet, the set of methods
+conversion_complete?, conversion_successful?, and conversion_error? can be used
+to determine the current conversion status of the document.
+
+
+h2. About the Author
+
+My name is Matt Darby. I’m a 29 year old professional Web Developer and IT Manager. I am the IT Manager and Lead Web Developer at Dynamix Engineering and recently earned a Master’s Degree in Computer Science from Franklin University in Columbus, OH.
+
+Feel free to check out my "blog":http://blgo.matt-darby.com or to "recommend me":http://workingwithrails.com
