@@ -30,6 +30,7 @@ acts_as_scribd_document
 Add the following fields into a new migration for the target model (and update your schema!):
 t.integer :scribd_id
 t.string :scribd_access_key
+t.boolean :scribd_public
 
 Sign up for Scribd (it’s totally free)
 
@@ -51,7 +52,11 @@ That’s it!
 
 Further Info
 ------------
-You can make your Scribd documents private or public, to choose, just modify the scribd.yml file and enter ‘private’ or ‘public’ in the ‘access’ key.
+You can make each Scribd document private or public. 
+
+You can select a default option by just modifying the scribd.yml file and entering ‘private’ or ‘public’ in the ‘access’ key. 
+
+To select an option on a document value, just set 'scribd_public' value to be true or false. If this column is not defined, the default option in the scribd.yml will be used.
 
 
 About the Author
