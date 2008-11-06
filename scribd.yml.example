@@ -5,4 +5,5 @@ scribd:
  secret: 
  user: 
  password: 
- access: 
+ access:
+#storage: s3 # Uncomment if Attachment_fu is using Amazon S3 for storage

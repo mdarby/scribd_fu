@@ -99,10 +99,20 @@ module Scribd_fu
       scribd_access
     end
     
+    def final_path      
+      if scribd_config[:scribd]['storage'].eql?('s3')
+        file_path = s3_url
+      else
+        file_path = full_filename
+      end
+    
+      file_path
+    end
+    
     def upload_to_scribd
       if scribdable? and self.scribd_id.blank?
         
-        if resource = scribd_login.upload(:file => "#{full_filename}", :access => access_level)
+        if resource = scribd_login.upload(:file => "#{final_path}", :access => access_level)
           logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully uploaded for conversion to iPaper."
 
           self.scribd_id         = resource.doc_id
