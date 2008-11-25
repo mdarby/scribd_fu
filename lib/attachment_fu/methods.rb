@@ -33,7 +33,7 @@ module ScribdFu
         write_attribute :scribd_access_key, key.to_s.strip
       end
 
-      def destroy_scribd_document
+      def destroy_scribd_documents
         unless scribd_id.blank?
           document = scribd_login.find_document(scribd_id)
 

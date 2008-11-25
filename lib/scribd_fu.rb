@@ -44,6 +44,7 @@ module ScribdFu
   end
 
   module InstanceMethods
+    # Sets up Scribd configuration info when this module is included.
     def self.included(base)
       base.extend ClassMethods
 
@@ -73,10 +74,13 @@ module ScribdFu
   end
 
   module ClassMethods
+    # Sets up the scribd_options accessor, a before_destroy hook to ensure the
+    # deletion of associated Scribd documents, and an after_save hook to upload
+    # to scribd.
     def self.extended(base)
       base.class_inheritable_accessor :scribd_options
 
-      base.before_destroy :destroy_scribd_document
+      base.before_destroy :destroy_scribd_documents
       base.after_save     :upload_to_scribd
     end
   end
