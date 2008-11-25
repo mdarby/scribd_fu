@@ -1,11 +1,25 @@
 module ScribdFu
   module Paperclip
     module ClassMethods
-      # Adds validations to the current model to check that its attachment is
-      # scribdable.
-      def validates_as_scribd_document
-        validates_presence_of :scribd_id, :scribd_access_id, :content_type
-        validate              :scribd_attributes_valid?
+      # Adds validations to the current model to check that the attachment at
+      # +attribute+ is scribdable. If +attribute+ is nil, then all attachments
+      # that have been marked as scribdable are validated.
+      #
+      # Note that all calls to has_scribdable_attachment should be made before
+      # calling validates_attachment_scribdability with a nil parameter;
+      # otherwise, only those that have been created already will be validated.
+      def validates_attachment_scribdability(attribute = nil)
+        attributes = attribute.nil? ? scribd_attributes : [attribute]
+
+        attributes.each do |attribute|
+          validates_presence_of "#{attribute}_scribd_id",
+                                "#{attribute}_scribd_access_key",
+                                "#{attribute}_content_type"
+          validates_attachment_content_type attribute,
+            :content_type => ScribdFu::CONTENT_TYPES
+
+          validate { scribd_attributes_valid?(attribute) }
+        end
       end
     end
 
@@ -14,10 +28,17 @@ module ScribdFu
         base.extend ClassMethods
       end
 
-      def scribd_attributes_valid?
-        [:scribd_id, :scribd_access_id].each do |attr_name|
-          enum = scribd_options[attr_name]
-          errors.add attr_name, ActiveRecord::Errors.default_error_messages[:inclusion] unless enum.nil? || enum.include?(send(attr_name))
+      # Verifies whether the Scribd attributes are valid for the given
+      # +attribute+, which should be a Paperclip attachment attribute.
+      def scribd_attributes_valid?(attribute)
+        attrs = ["#{attribute}_scribd_id", "#{attribute}_scribd_access_key"]
+        error = ActiveRecord::Errors.default_error_messages[:inclusion]
+
+        attrs.collect(&:to_sym).each do |scribd_attr|
+          enum = scribd_options[scribd_attr]
+          value = send(scribd_attr)
+
+          errors.add scribd_attr, error unless enum.nil? || enum.include?(value)
         end
       end
 
