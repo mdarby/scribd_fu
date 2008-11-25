@@ -1,37 +1,49 @@
-module Scribd_fu
+require 'attachment_fu/methods'
+require 'paperclip/methods'
+
+module ScribdFu
+  # A list of content types supported by scribd.
+  SCRIBD_CONTENT_TYPES = ['application/pdf', 'image/jpeg', 'image/pjpeg',
+                          'image/gif', 'image/png', 'image/x-png', 'image/jpg',
+                          'application/msword', 'application/mspowerpoint',
+                          'application/vnd.ms-powerpoint', 'application/excel',
+                          'application/vnd.ms-excel', 'application/postscript',
+                          'text/plain', 'application/rtf',
+                          'application/vnd.oasis.opendocument.text',
+                          'vnd.oasis.opendocument.presentation',
+                          'application/vnd.sun.xml.writer',
+                          'application/vnd.sun.xml.impress']
 
   def self.included(base)
-    base.extend ActsAsScribdObject
+    base.extend ActsAsScribdDocument
   end
 
-  module ActsAsScribdObject
-    def acts_as_scribd_document(options = {})
-      class_eval <<-END
-        include Scribd_fu::InstanceMethods
-      END
-    end
-  end
-
-  module ClassMethods
-    def self.extended(base)
-      base.class_inheritable_accessor :scribd_options
-      base.before_destroy :destroy_scribd_document
-      base.after_save :upload_to_scribd
+  module ActsAsScribdDocument
+    # Synonym for <tt>has_scribdable_attachment(nil)</tt>.
+    def acts_as_scribd_document
+      has_scribdable_attachment
     end
 
-    def validates_as_scribd_document
-      validates_presence_of :scribd_id, :scribd_access_id, :content_type
-      validate              :scribd_attributes_valid?
+    # Marks the given +attribute+ as a scribdable document file. If +attribute+
+    # is nil, assumes this is an +attachment_fu+ model and deals with the setup
+    # accordingly; otherwise, assumes a +paperclip+ model and sets up scribding
+    # related to the particular given attribute.
+    def has_scribdable_attachment(attribute = nil)
+      class_eval do
+        include ScribdFu::InstanceMethods
+
+        if attribute.nil?
+          include ScribdFu::AttachmentFu::InstanceMethods
+        else
+          include ScribdFu::Paperclip::InstanceMethods # ignored if already done
+
+          add_scribd_attribute attribute # class method added by above include
+        end
+      end
     end
   end
 
   module InstanceMethods
-    @@content_types = ['application/pdf', 'image/jpeg', 'image/pjpeg', 'image/gif', 'image/png', 'image/x-png', 'image/jpg', 'application/msword', 'application/mspowerpoint', 'application/vnd.ms-powerpoint',
-                        'application/excel', 'application/vnd.ms-excel', 'application/postscript', 'text/plain', 'application/rtf', 'application/vnd.oasis.opendocument.text', 'vnd.oasis.opendocument.presentation',
-                        'application/vnd.sun.xml.writer', 'application/vnd.sun.xml.impress']
-
-    mattr_reader :content_types
-
     def self.included(base)
       base.extend ClassMethods
 
@@ -58,90 +70,14 @@ module Scribd_fu
         exit
       end
     end
-
-    def scribd_attributes_valid?
-      [:scribd_id, :scribd_access_id].each do |attr_name|
-        enum = scribd_options[attr_name]
-        errors.add attr_name, ActiveRecord::Errors.default_error_messages[:inclusion] unless enum.nil? || enum.include?(send(attr_name))
-      end
-    end
-
-    def scribdable?
-      content_types.include?(content_type)
-    end
-
-    def scribd_id=(id)
-      write_attribute :scribd_id, id.to_s.strip
-    end
-
-    def scribd_access_key=(key)
-      write_attribute :scribd_access_key, key.to_s.strip
-    end
-
-    def destroy_scribd_document
-      unless scribd_id.blank?
-        document = scribd_login.find_document(scribd_id)
-
-        if document.destroy
-          logger.info "[Scribd_fu] #{Time.now.rfc2822}: Removing Object #{id} successful"
-        else
-          logger.info "[Scribd_fu] #{Time.now.rfc2822}: Removing Object #{id} failed!"
-        end
-      end
-    end
-
-    def upload_to_scribd
-      if scribdable? and self.scribd_id.blank?
-        if resource = scribd_login.upload(:file => "#{full_filename}", :access => scribd_config[:scribd]['access'])
-          logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully uploaded for conversion to iPaper."
-
-          self.scribd_id         = resource.doc_id
-          self.scribd_access_key = resource.access_key
-
-          save
-        else
-          logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} upload failed!"
-        end
-      end
-    end
-
-    # Responds true if the conversion is complete -- note that this gives no
-    # indication as to whether the conversion had an error or was succesful,
-    # just that the conversion completed.
-    #
-    # Note that this method still returns false if the model does not refer to a
-    # valid document.  scribd_attributes_valid? should be used to determine the
-    # validity of the document.
-    def conversion_complete?
-      scribd_document && scribd_document.conversion_status != 'PROCESSING'
-    end
-
-    # Responds true if the document has been converted.
-    #
-    # Note that this method still returns false if the model does not refer to a
-    # valid document.  scribd_attributes_valid? should be used to determine the
-    # validity of the document.
-    def conversion_successful?
-      scribd_document && scribd_document.conversion_status =~ /^DISPLAYABLE|DONE$/
-    end
-
-    # Responds true if there was a conversion error while converting
-    # to iPaper.
-    #
-    # Note that this method still returns false if the model does not refer to a
-    # valid document.  scribd_attributes_valid? should be used to determine the
-    # validity of the document.
-    def conversion_error?
-      scribd_document && scribd_document.conversion_status == 'ERROR'
-    end
-
-    # Responds the Scribd::Document associated with this model, or nil if it
-    # does not exist.
-    def scribd_document
-      @scribd_document ||= scribd_login.find_document(scribd_id)
-    rescue Scribd::ResponseError # at minimum, the document was not found
-      nil
-    end
   end
 
+  module ClassMethods
+    def self.extended(base)
+      base.class_inheritable_accessor :scribd_options
+
+      base.before_destroy :destroy_scribd_document
+      base.after_save     :upload_to_scribd
+    end
+  end
 end
