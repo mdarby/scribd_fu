@@ -80,8 +80,8 @@ module ScribdFu
         end
       end
 
-      # Uploads all scribd documents for this record. This is called
-      # +before_save+, as set up by ScribdFu::ClassMethods#extended.
+      # Uploads all scribdable attributes to scribd for processing. This is
+      # called +before_save+, as set up by ScribdFu::ClassMethods#extended.
       def upload_to_scribd
         self.class.scribd_attributes.each do |attribute|
           scribd_id = self["#{attribute}_scribd_id"]

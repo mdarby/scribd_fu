@@ -14,6 +14,9 @@ module ScribdFu
         base.extend ClassMethods
       end
 
+      # Checks whether the attachment is scribdable. This boils down to a check
+      # to ensure that the contents of the attachment are of a content type that
+      # scribd can understand.
       def scribdable?
         ScribdFu::SCRIBD_CONTENT_TYPES.include?(content_type)
       end
@@ -26,6 +29,8 @@ module ScribdFu
         write_attribute :scribd_access_key, key.to_s.strip
       end
 
+      # Destroys the scribd document for this record. This is called
+      # +before_destroy+, as set up by ScribdFu::ClassMethods#extended.
       def destroy_scribd_documents
         unless scribd_id.blank?
           document = scribd_login.find_document(scribd_id)
@@ -38,6 +43,8 @@ module ScribdFu
         end
       end
 
+      # Uploads the attachment to scribd for processing.. This is called
+      # +before_save+, as set up by ScribdFu::ClassMethods#extended.
       def upload_to_scribd
         if scribdable? and self.scribd_id.blank?
           if resource = scribd_login.upload(:file => "#{file_path}", :access => scribd_config[:scribd]['access'])
