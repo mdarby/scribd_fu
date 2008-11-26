@@ -12,7 +12,16 @@ module ScribdFu
                           'application/vnd.oasis.opendocument.text',
                           'application/vnd.oasis.opendocument.presentation',
                           'application/vnd.sun.xml.writer',
-                          'application/vnd.sun.xml.impress']
+                          'application/vnd.sun.xml.impress',
+    # OOXML, AKA `the MIME types from hell'. Seriously, these are long enough to
+    # start their own dictionary...
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
+    'application/vnd.openxmlformats-officedocument.presentationml.template',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.template']
 
   def self.included(base)
     base.extend ActsAsScribdDocument
