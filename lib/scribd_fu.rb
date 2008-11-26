@@ -10,7 +10,7 @@ module ScribdFu
                           'application/vnd.ms-excel', 'application/postscript',
                           'text/plain', 'application/rtf',
                           'application/vnd.oasis.opendocument.text',
-                          'vnd.oasis.opendocument.presentation',
+                          'application/vnd.oasis.opendocument.presentation',
                           'application/vnd.sun.xml.writer',
                           'application/vnd.sun.xml.impress']
 
