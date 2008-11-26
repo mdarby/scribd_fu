@@ -40,7 +40,7 @@ module ScribdFu
 
       def upload_to_scribd
         if scribdable? and self.scribd_id.blank?
-          if resource = scribd_login.upload(:file => "#{full_filename}", :access => scribd_config[:scribd]['access'])
+          if resource = scribd_login.upload(:file => "#{file_path}", :access => scribd_config[:scribd]['access'])
             logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully uploaded for conversion to iPaper."
 
             self.scribd_id         = resource.doc_id
@@ -50,6 +50,18 @@ module ScribdFu
           else
             logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} upload failed!"
           end
+        end
+      end
+
+      # Returns the correct path to the file, either the local filename or the
+      # S3 URL.
+      def file_path
+        if scribd_config[:scribd]['storage'].eql?('s3')
+           s3_url
+        elsif save_attachment? # file hasn't been saved, use the temp file
+          temp_path
+        else
+           full_filename
         end
       end
 
