@@ -17,8 +17,6 @@ module ScribdFu
                                 "#{attribute}_content_type"
           validates_attachment_content_type attribute,
             :content_type => ScribdFu::CONTENT_TYPES
-
-          validate { scribd_attributes_valid?(attribute) }
         end
       end
     end
@@ -26,20 +24,6 @@ module ScribdFu
     module InstanceMethods
       def self.included(base)
         base.extend ClassMethods
-      end
-
-      # Verifies whether the Scribd attributes are valid for the given
-      # +attribute+, which should be a Paperclip attachment attribute.
-      def scribd_attributes_valid?(attribute)
-        attrs = ["#{attribute}_scribd_id", "#{attribute}_scribd_access_key"]
-        error = ActiveRecord::Errors.default_error_messages[:inclusion]
-
-        attrs.collect(&:to_sym).each do |scribd_attr|
-          enum = scribd_options[scribd_attr]
-          value = send(scribd_attr)
-
-          errors.add scribd_attr, error unless enum.nil? || enum.include?(value)
-        end
       end
 
       def scribdable?

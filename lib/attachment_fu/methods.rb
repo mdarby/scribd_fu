@@ -5,20 +5,13 @@ module ScribdFu
       # scribdable.
       def validates_as_scribd_document
         validates_presence_of :scribd_id, :scribd_access_key, :content_type
-        validate              :scribd_attributes_valid?
+        validate :scribdable?
       end
     end
 
     module InstanceMethods
       def self.included(base)
         base.extend ClassMethods
-      end
-
-      def scribd_attributes_valid?
-        [:scribd_id, :scribd_access_key].each do |attr_name|
-          enum = scribd_options[attr_name]
-          errors.add attr_name, ActiveRecord::Errors.default_error_messages[:inclusion] unless enum.nil? || enum.include?(send(attr_name))
-        end
       end
 
       def scribdable?
