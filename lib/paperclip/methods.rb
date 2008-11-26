@@ -19,6 +19,35 @@ module ScribdFu
             :content_type => ScribdFu::CONTENT_TYPES
         end
       end
+
+      # Adds the given +attribute+ to the list of attributes that are uploaded
+      # to scribd.
+      #
+      # Note that a scribd attribute should not be added if it is not a
+      # Paperclip attachment attribute.
+      def add_scribd_attribute(attribute)
+        write_inheritable_attribute :scribd_attributes, [] if scribd_attributes.nil?
+
+        scribd_attributes << attribute
+
+        setup_scribd_attribute(attribute)
+      end
+
+      private
+        def scribd_attributes
+          read_inheritable_attribute :scribd_attributes
+        end
+
+        # Sets up methods needed for the given +attribute+ to be scribdable.
+        def setup_scribd_attribute(attribute)
+          define_method("#{attribute}_scribd_id=") do |id|
+            write_attribute "#{attribute}_scribd_id", id.to_s.strip
+          end
+
+          define_method("#{attribute}_scribd_access_key=") do |key|
+            write_attribute "#{attribute}_scribd_access_key", key.to_s.strip
+          end
+        end
     end
 
     module InstanceMethods
@@ -26,16 +55,11 @@ module ScribdFu
         base.extend ClassMethods
       end
 
-      def scribdable?
-        ScribdFu::SCRIBD_CONTENT_TYPES.include?(content_type)
-      end
-
-      def scribd_id=(id)
-        write_attribute :scribd_id, id.to_s.strip
-      end
-
-      def scribd_access_key=(key)
-        write_attribute :scribd_access_key, key.to_s.strip
+      # Checks whether the given attribute is scribdable. This boils down to a
+      # check to ensure that the contents of the attribute are of a content type
+      # that scribd can understand.
+      def scribdable?(attribute)
+        ScribdFu::SCRIBD_CONTENT_TYPES.include?(self["#{attribute}_content_type"])
       end
 
       def destroy_scribd_documents
