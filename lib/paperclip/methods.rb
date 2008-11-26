@@ -62,29 +62,44 @@ module ScribdFu
         ScribdFu::SCRIBD_CONTENT_TYPES.include?(self["#{attribute}_content_type"])
       end
 
+      # Destroys all scribd documents for this record. This is called
+      # +before_destroy+, as set up by ScribdFu::ClassMethods#extended.
       def destroy_scribd_documents
-        unless scribd_id.blank?
-          document = scribd_login.find_document(scribd_id)
+        self.class.scribd_attributes.each do |attribute|
+          scribd_id = self["#{attribute}_scribd_id"]
 
-          if document.destroy
-            logger.info "[Scribd_fu] #{Time.now.rfc2822}: Removing Object #{id} successful"
-          else
-            logger.info "[Scribd_fu] #{Time.now.rfc2822}: Removing Object #{id} failed!"
+          unless scribd_id.blank?
+            document = scribd_login.find_document(scribd_id)
+
+            if document.destroy
+              logger.info "[Scribd_fu] #{Time.now.rfc2822}: Removing Object #{id}##{attribute} successful"
+            else
+              logger.info "[Scribd_fu] #{Time.now.rfc2822}: Removing Object #{id}##{attribute} failed!"
+            end
           end
         end
       end
 
+      # Uploads all scribd documents for this record. This is called
+      # +before_save+, as set up by ScribdFu::ClassMethods#extended.
       def upload_to_scribd
-        if scribdable? and self.scribd_id.blank?
-          if resource = scribd_login.upload(:file => "#{full_filename}", :access => scribd_config[:scribd]['access'])
-            logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully uploaded for conversion to iPaper."
+        self.class.scribd_attributes.each do |attribute|
+          scribd_id = self["#{attribute}_scribd_id"]
 
-            self.scribd_id         = resource.doc_id
-            self.scribd_access_key = resource.access_key
+          if scribdable?(attribute) and scribd_id.blank?
+            filename = full_filename_for(attribute)
 
-            save
-          else
-            logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} upload failed!"
+            if resource = scribd_login.upload(:file => "#{filename}",
+                                              :access => scribd_config['access'])
+              logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id}##{attribute} successfully uploaded for conversion to iPaper."
+
+              self.send("#{attribute}_scribd_id=",         resource.doc_id)
+              self.send("#{attribute}_scribd_access_key=", resource.access_key)
+            else
+              logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id}##{attribute} upload failed!"
+
+              false # cancel the save
+            end
           end
         end
       end
@@ -126,6 +141,18 @@ module ScribdFu
       rescue Scribd::ResponseError # at minimum, the document was not found
         nil
       end
+
+      private
+        def scribd_documents
+          @scribd_documents ||= HashWithIndifferentAccess.new
+        end
+
+        # Returns the full filename for the given attribute. If the file is
+        # stored on S3, this is a full S3 URI, while it is a full path to the
+        # local file if the file is stored locally.
+        def full_filename_for(attribute)
+          filename = attachment_for(attribute).path
+        end
     end
   end
 end

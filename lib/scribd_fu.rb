@@ -68,12 +68,13 @@ module ScribdFu
       begin
         unless @@scribd_login
           @@scribd_config = YAML.load_file("#{RAILS_ROOT}/config/scribd.yml").symbolize_keys
+          @@scribd_config = @@scribd_config[:scribd]
 
           # Ensure we can connect to the Service
-          Scribd::API.instance.key    = @@scribd_config[:scribd]['key'].to_s.strip
-          Scribd::API.instance.secret = @@scribd_config[:scribd]['secret'].to_s.strip
+          Scribd::API.instance.key    = @@scribd_config['key'].to_s.strip
+          Scribd::API.instance.secret = @@scribd_config['secret'].to_s.strip
 
-          @@scribd_login = Scribd::User.login @@scribd_config[:scribd]['user'].to_s.strip, @@scribd_config[:scribd]['password'].to_s.strip
+          @@scribd_login = Scribd::User.login @@scribd_config['user'].to_s.strip, @@scribd_config['password'].to_s.strip
         end
       rescue
         puts "Config file not found, or your credentials are b0rked!"
@@ -90,7 +91,7 @@ module ScribdFu
       base.class_inheritable_accessor :scribd_options
 
       base.before_destroy :destroy_scribd_documents
-      base.after_save     :upload_to_scribd
+      base.before_save    :upload_to_scribd
     end
   end
 end
