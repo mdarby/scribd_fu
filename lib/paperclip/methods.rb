@@ -104,40 +104,49 @@ module ScribdFu
         end
       end
 
-      # Responds true if the conversion is complete -- note that this gives no
-      # indication as to whether the conversion had an error or was succesful,
-      # just that the conversion completed.
+      # Responds true if the conversion is complete for the given +attribute+ --
+      # note that this gives no indication as to whether the conversion had an
+      # error or was succesful, just that the conversion completed. See
+      # <tt>conversion_successful?</tt> for that information.
       #
-      # Note that this method still returns false if the model does not refer to a
-      # valid document.  scribd_attributes_valid? should be used to determine the
-      # validity of the document.
-      def conversion_complete?
-        scribd_document && scribd_document.conversion_status != 'PROCESSING'
+      # Note also that this method still returns false if the model does not
+      # refer to a valid document.  scribd_attributes_valid? should be used to
+      # determine the validity of the document.
+      def conversion_complete?(attribute)
+        doc = scribd_document_for(attribute)
+
+        doc && doc.conversion_status != 'PROCESSING'
       end
 
-      # Responds true if the document has been converted.
+      # Responds true if the document for the given +attribute+ has been
+      # converted successfully. This *will* respond false if the conversion has
+      # failed.
       #
       # Note that this method still returns false if the model does not refer to a
-      # valid document.  scribd_attributes_valid? should be used to determine the
-      # validity of the document.
-      def conversion_successful?
-        scribd_document && scribd_document.conversion_status =~ /^DISPLAYABLE|DONE$/
+      # valid document. <tt>scribd_attributes_valid?</tt> should be used to
+      # determine the validity of the document.
+      def conversion_successful?(attribute)
+        doc = scribd_document_for(attribute)
+
+        doc && doc.conversion_status =~ /^DISPLAYABLE|DONE$/
       end
 
-      # Responds true if there was a conversion error while converting
-      # to iPaper.
+      # Responds true if there was a conversion error while converting the given
+      # +attribute+ to iPaper.
       #
       # Note that this method still returns false if the model does not refer to a
-      # valid document.  scribd_attributes_valid? should be used to determine the
-      # validity of the document.
-      def conversion_error?
-        scribd_document && scribd_document.conversion_status == 'ERROR'
+      # valid document. <tt>scribd_attributes_valid?</tt> should be used to
+      # determine the validity of the document.
+      def conversion_error?(attribute)
+        doc = scribd_document_for(attribute)
+
+        doc && doc.conversion_status == 'ERROR'
       end
 
-      # Responds the Scribd::Document associated with this model, or nil if it
-      # does not exist.
-      def scribd_document
-        @scribd_document ||= scribd_login.find_document(scribd_id)
+      # Responds the Scribd::Document associated with the given +attribute+, or
+      # nil if it does not exist.
+      def scribd_document_for(attribute)
+        scribd_documents[attribute] ||= scribd_login.find_document(self["#{attribute}_scribd_id"])
       rescue Scribd::ResponseError # at minimum, the document was not found
         nil
       end
