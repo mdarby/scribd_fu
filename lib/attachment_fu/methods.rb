@@ -47,29 +47,40 @@ module ScribdFu
       # +before_save+, as set up by ScribdFu::ClassMethods#extended.
       def upload_to_scribd
         if scribdable? and self.scribd_id.blank?
-          if resource = scribd_login.upload(:file => "#{file_path}", :access => scribd_config['access'])
-            logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully uploaded for conversion to iPaper."
+          with_file_path do |file_path|
+            if resource = scribd_login.upload(:file => "#{file_path}", :access => scribd_config['access'])
+              logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully uploaded for conversion to iPaper."
 
-            self.scribd_id         = resource.doc_id
-            self.scribd_access_key = resource.access_key
+              self.scribd_id         = resource.doc_id
+              self.scribd_access_key = resource.access_key
 
-            save
-          else
-            logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} upload failed!"
+              save
+            else
+              logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} upload failed!"
+            end
           end
         end
       end
 
-      # Returns the correct path to the file, either the local filename or the
+      # Yields the correct path to the file, either the local filename or the
       # S3 URL.
-      def file_path
+      #
+      # This method creates a temporary file of the correct filename if
+      # necessary, so as to be able to give scribd the right filename. The file
+      # is destroyed when the passed block ends.
+      def with_file_path(&block) # :yields: full_file_path
         if scribd_config['storage'].eql?('s3')
-           s3_url
+           yield s3_url
         elsif save_attachment? # file hasn't been saved, use the temp file
-          temp_path
+          temp_rename = File.join(Dir.tmpdir, filename)
+          File.copy(temp_path, temp_rename)
+
+          yield temp_rename
         else
-          full_filename
+          yield full_filename
         end
+      ensure
+        temp_rename && File.unlink(temp_rename) # always delete this
       end
 
       # Responds true if the conversion is complete -- note that this gives no
