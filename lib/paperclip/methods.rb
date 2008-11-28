@@ -33,11 +33,11 @@ module ScribdFu
         setup_scribd_attribute(attribute)
       end
 
-      private
-        def scribd_attributes
-          read_inheritable_attribute :scribd_attributes
-        end
+      def scribd_attributes
+        read_inheritable_attribute :scribd_attributes
+      end
 
+      private
         # Sets up methods needed for the given +attribute+ to be scribdable.
         def setup_scribd_attribute(attribute)
           define_method("#{attribute}_scribd_id=") do |id|
