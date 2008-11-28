@@ -90,8 +90,8 @@ module ScribdFu
     def self.extended(base)
       base.class_inheritable_accessor :scribd_options
 
-      base.before_destroy :destroy_scribd_documents
-      base.before_save    :upload_to_scribd
+      base.before_destroy    :destroy_scribd_documents
+      base.before_validation :upload_to_scribd
     end
   end
 end

@@ -44,7 +44,7 @@ module ScribdFu
       end
 
       # Uploads the attachment to scribd for processing.. This is called
-      # +before_save+, as set up by ScribdFu::ClassMethods#extended.
+      # +before_validation+, as set up by ScribdFu::ClassMethods#extended.
       def upload_to_scribd
         if scribdable? and self.scribd_id.blank?
           with_file_path do |file_path|
