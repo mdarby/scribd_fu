@@ -18,7 +18,7 @@ module ScribdFu
       # to ensure that the contents of the attachment are of a content type that
       # scribd can understand.
       def scribdable?
-        ScribdFu::SCRIBD_CONTENT_TYPES.include?(content_type)
+        ScribdFu::CONTENT_TYPES.include?(content_type)
       end
 
       def scribd_id=(id)

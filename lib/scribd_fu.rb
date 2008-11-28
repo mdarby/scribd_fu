@@ -3,16 +3,16 @@ require 'paperclip/methods'
 
 module ScribdFu
   # A list of content types supported by scribd.
-  SCRIBD_CONTENT_TYPES = ['application/pdf', 'image/jpeg', 'image/pjpeg',
-                          'image/gif', 'image/png', 'image/x-png', 'image/jpg',
-                          'application/msword', 'application/mspowerpoint',
-                          'application/vnd.ms-powerpoint', 'application/excel',
-                          'application/vnd.ms-excel', 'application/postscript',
-                          'text/plain', 'application/rtf',
-                          'application/vnd.oasis.opendocument.text',
-                          'application/vnd.oasis.opendocument.presentation',
-                          'application/vnd.sun.xml.writer',
-                          'application/vnd.sun.xml.impress',
+  CONTENT_TYPES = ['application/pdf', 'image/jpeg', 'image/pjpeg',
+                   'image/gif', 'image/png', 'image/x-png', 'image/jpg',
+                   'application/msword', 'application/mspowerpoint',
+                   'application/vnd.ms-powerpoint', 'application/excel',
+                   'application/vnd.ms-excel', 'application/postscript',
+                   'text/plain', 'application/rtf',
+                   'application/vnd.oasis.opendocument.text',
+                   'application/vnd.oasis.opendocument.presentation',
+                   'application/vnd.sun.xml.writer',
+                   'application/vnd.sun.xml.impress',
     # OOXML, AKA `the MIME types from hell'. Seriously, these are long enough to
     # start their own dictionary...
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

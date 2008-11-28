@@ -59,7 +59,7 @@ module ScribdFu
       # check to ensure that the contents of the attribute are of a content type
       # that scribd can understand.
       def scribdable?(attribute)
-        ScribdFu::SCRIBD_CONTENT_TYPES.include?(self["#{attribute}_content_type"])
+        ScribdFu::CONTENT_TYPES.include?(self["#{attribute}_content_type"])
       end
 
       # Destroys all scribd documents for this record. This is called
