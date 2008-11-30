@@ -90,18 +90,21 @@ module ScribdFu
           scribd_id = self["#{attribute}_scribd_id"]
 
           if scribdable?(attribute) and scribd_id.blank?
-            filename = full_filename_for(attribute)
+            with_file_path_for(attribute) do |filename|
+              if resource = scribd_login.upload(:file   => filename,
+                                                :access => scribd_config['access'])
+                self.send("#{attribute}_scribd_id=",         resource.doc_id)
+                self.send("#{attribute}_scribd_access_key=", resource.access_key)
 
-            if resource = scribd_login.upload(:file => "#{filename}",
-                                              :access => scribd_config['access'])
-              logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id}##{attribute} successfully uploaded for conversion to iPaper."
+                logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object " +
+                            "#{id}##{attribute} successfully uploaded " +
+                            "for conversion to iPaper."
+              else
+                logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object " +
+                            "#{id}##{attribute} upload failed!"
 
-              self.send("#{attribute}_scribd_id=",         resource.doc_id)
-              self.send("#{attribute}_scribd_access_key=", resource.access_key)
-            else
-              logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id}##{attribute} upload failed!"
-
-              false # cancel the save
+                false # cancel the save
+              end
             end
           end
         end
@@ -164,6 +167,30 @@ module ScribdFu
         # local file if the file is stored locally.
         def full_filename_for(attribute)
           filename = attachment_for(attribute).path
+        end
+
+        # Yields the correct path to the file for the attachment in
+        # +attribute+, either the local filename or the S3 URL.
+        #
+        # This method creates a temporary file of the correct filename  for the
+        # attachment in +attribute+ if necessary, so as to be able to give
+        # scribd the right filename. The file is destroyed when the passed block
+        # ends.
+        def with_file_path_for(attribute, &block) # :yields: full_file_path
+          attachment = attachment_for(attribute)
+
+          if attachment.respond_to?(:s3)
+             yield attachment.url
+          elsif File.exists?(attachment.path)
+            yield attachment.path
+          else # file hasn't been saved, use a tempfile
+            temp_rename = File.join(Dir.tmpdir, attachment.original_filename)
+            File.copy(attachment.to_file.path, temp_rename)
+
+            yield temp_rename
+          end
+        ensure
+          temp_rename && File.unlink(temp_rename) # always delete this
         end
     end
   end
