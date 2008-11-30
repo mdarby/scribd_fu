@@ -1,3 +1,5 @@
+require 'ftools'
+
 module ScribdFu
   module Paperclip
     module ClassMethods
