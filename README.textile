@@ -17,27 +17,19 @@ You also need the rscribd gem (sudo gem install rscribd will do the trick)
 h2. How to Install & Use
 
 # Install the rscribd gem
-<pre><code>
-gem install rscribd
-</code></pre>
+<pre>gem install rscribd</pre>
 # Install the scribd_fu gem
-<pre><code>
-sudo gem install mdarby-scribd_fu
-</code></pre>
+<pre>sudo gem install mdarby-scribd_fu</pre>
 # Add this line to your config/environment.rb file
-<pre><code>
-config.gem 'mdarby-scribd_fu', :lib => 'scribd_fu'
-</code></pre>
+<pre>config.gem 'mdarby-scribd_fu', :lib => 'scribd_fu'</pre>
 # Enter the below line into any attachment_fu-using model that you’d like to Scribdify
-<pre><code>
-acts_as_scribd_document
-</code></pre>
+<pre>acts_as_scribd_document</pre>
 # Add the following fields into a new migration for the target model (and update your schema!):
-<pre><code>
+<pre>
 t.integer :scribd_id
 t.string :scribd_access_key
 t.boolean :is_public
-</code></pre>
+</pre>
 # Sign up for Scribd (it’s totally free)
 # Copy the vendor/plugins/scribd.yml.example file to config/scribd.yml and fill out with your Scribd login credentials
 # Now, when you upload a file that is convertible in the Scribd system, Scribd_fu will automatically handle the CRUD for you. No muss, no fuss.
@@ -55,9 +47,7 @@ Please note that setting the access level only works before the document is init
 h2. Displaying
 
 To view a Scribd document, just throw the below code into your view (where @document is an object of your Scribd/Attachment_fu model):
-<pre><code>
-<%= display_scribd(@document) %>
-</code></pre>
+<pre><%= display_scribd(@document) %></pre>
 
 That’s it!
 
