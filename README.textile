@@ -20,9 +20,13 @@ h2. How to Install & Use
 <pre><code>
 gem install rscribd
 </code></pre>
-# Install the plugin
+# Install the scribd_fu gem
 <pre><code>
-./script/plugin install git://github.com/mdarby/scribd_fu.git
+sudo gem install mdarby-scribd_fu
+</code></pre>
+# Add this line to your config/environment.rb file
+<pre><code>
+config.gem 'mdarby-scribd_fu', :lib => 'scribd_fu'
 </code></pre>
 # Enter the below line into any attachment_fu-using model that you’d like to Scribdify
 <pre><code>
