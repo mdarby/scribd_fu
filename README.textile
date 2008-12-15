@@ -26,7 +26,7 @@ rscribd. First, add Scribd_fu to your list of gems in
 <tt>config/environment.rb</tt>:
 
 <pre>config.gem 'mdarby-scribd_fu', :lib => 'scribd_fu',
-                                    :source => 'http://gems.github.com'</pre>
+                               :source => 'http://gems.github.com'</pre>
 
 Then run:
 
