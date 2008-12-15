@@ -12,5 +12,5 @@ Gem::Specification.new do |s|
   s.authors  = ["Matt Darby"]
   s.files    = FileList['lib/**/*.rb', '*'].to_a
 
-  s.add_dependency 'rscrid'
+  s.add_dependency 'rscribd'
 end
