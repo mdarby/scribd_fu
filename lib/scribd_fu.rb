@@ -11,8 +11,10 @@ module ScribdFu
                    'text/plain', 'application/rtf',
                    'application/vnd.oasis.opendocument.text',
                    'application/vnd.oasis.opendocument.presentation',
+                   'application/vnd.oasis.opendocument.spreadsheet',
                    'application/vnd.sun.xml.writer',
                    'application/vnd.sun.xml.impress',
+                   'application/vnd.sun.xml.calc'
     # OOXML, AKA `the MIME types from hell'. Seriously, these are long enough to
     # start their own dictionary...
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

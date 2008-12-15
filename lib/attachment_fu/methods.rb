@@ -106,6 +106,7 @@ module ScribdFu
       # necessary, so as to be able to give scribd the right filename. The file
       # is destroyed when the passed block ends.
       def with_file_path(&block) # :yields: full_file_path
+        # TODO We can probably do this using respond_to?
         if scribd_config['storage'].eql?('s3')
            yield s3_url
         elsif save_attachment? # file hasn't been saved, use the temp file
