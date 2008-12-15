@@ -81,6 +81,15 @@ module ScribdFu
       end
     end
 
+    def access_level
+      if self.respond_to?(:is_public) && self.is_public != nil
+        scribd_access = self.is_public ? 'public' : 'private'
+      else
+        scribd_access = scribd_config[:scribd]['access']
+      end
+
+      scribd_access
+    end
   end
 
   module ClassMethods

@@ -33,24 +33,27 @@ module ScribdFu
 
       # Destroys the scribd document for this record. This is called
       # +before_destroy+, as set up by ScribdFu::ClassMethods#extended.
+      #
+      # Also available as destroy_scribd_document, which makes more sense in
+      # terms of pluralization for external calls.
       def destroy_scribd_documents
-        unless scribd_id.blank?
-          document = scribd_login.find_document(scribd_id)
-
-          if document.destroy
+        unless scribd_document.nil?
+          if scribd_document.destroy
             logger.info "[Scribd_fu] #{Time.now.rfc2822}: Removing Object #{id} successful"
           else
             logger.info "[Scribd_fu] #{Time.now.rfc2822}: Removing Object #{id} failed!"
           end
         end
       end
+      alias_method :destroy_scribd_documents, :destroy_scribd_document
 
       # Uploads the attachment to scribd for processing.. This is called
       # +before_validation+, as set up by ScribdFu::ClassMethods#extended.
       def upload_to_scribd
         if scribdable? and self.scribd_id.blank?
           with_file_path do |file_path|
-            if resource = scribd_login.upload(:file => "#{file_path}", :access => scribd_config['access'])
+            if resource = scribd_login.upload(:file => "#{file_path}",
+                                              :access => access_level)
               logger.info "[Scribd_fu] #{Time.now.rfc2822}: Object #{id} successfully uploaded for conversion to iPaper."
 
               self.scribd_id         = resource.doc_id
@@ -62,6 +65,38 @@ module ScribdFu
             end
           end
         end
+      end
+
+      # Returns a URL for a thumbnail for this model's attachment.
+      #
+      # If Scribd does not provide a thumbnail URL, then +attachment_fu+'s
+      # thumbnail is fallen back on by returning the value of
+      # <tt>public_filename(:thumb)</tt>.
+      #
+      # Sample use in a view:
+      #  <%= image_tag(@attachment .thumbnail_url, :alt => @attachment.name) %>
+      def thumbnail_url
+        (scribd_document && scribd_document.thumbnail_url) or
+          public_filename(:thumb)
+      end
+
+      # Returns the actual image data of a thumbnail for this model's
+      # attachment.
+      #
+      # If Scribd does not have a thumbnail for this file, then
+      # +attachment_fu+'s thumbnanil is fallen back on by returning the file at
+      # <tt>full_filename(:thumb)</tt>.
+      #
+      # Sample use in a controller:
+      #  render :inline => @attachment.thumbnail_file,
+      #         :content_type => 'image/jpeg'
+      def thumbnail_file
+        path = (scribd_document && scribd_document.thumbnail_url) ||
+                  full_filename(:thumb)
+
+        open(path).read
+      rescue Errno::ENOENT
+        nil
       end
 
       # Yields the correct path to the file, either the local filename or the

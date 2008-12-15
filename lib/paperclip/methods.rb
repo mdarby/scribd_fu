@@ -68,11 +68,9 @@ module ScribdFu
       # +before_destroy+, as set up by ScribdFu::ClassMethods#extended.
       def destroy_scribd_documents
         self.class.scribd_attributes.each do |attribute|
-          scribd_id = self["#{attribute}_scribd_id"]
+          document = scribd_document_for(self["#{attribute}_scribd_id"])
 
-          unless scribd_id.blank?
-            document = scribd_login.find_document(scribd_id)
-
+          unless document.nil?
             if document.destroy
               logger.info "[Scribd_fu] #{Time.now.rfc2822}: Removing Object #{id}##{attribute} successful"
             else
@@ -92,7 +90,7 @@ module ScribdFu
           if scribdable?(attribute) and scribd_id.blank?
             with_file_path_for(attribute) do |filename|
               if resource = scribd_login.upload(:file   => filename,
-                                                :access => scribd_config['access'])
+                                                :access => access_level)
                 self.send("#{attribute}_scribd_id=",         resource.doc_id)
                 self.send("#{attribute}_scribd_access_key=", resource.access_key)
 
@@ -108,6 +106,42 @@ module ScribdFu
             end
           end
         end
+      end
+
+      # Returns a URL for a thumbnail for the specified +attribute+ attachment.
+      #
+      # If Scribd does not provide a thumbnail URL, then Paperclip's thumbnail
+      # is fallen back on by returning the value of
+      # <tt>attribute.url(:thumb)</tt>.
+      #
+      # Sample use in a view:
+      #  <%= image_tag(@attachment.thumbnail_url, :alt => @attachment.name) %>
+      def thumbnail_url(attribute)
+        doc = scribd_document_for(attribute)
+
+        (doc && doc.thumbnail_url) or self.send(attribute).url(:thumb)
+      end
+
+      # Returns the actual image data of a thumbnail for the specified
+      # +attribute+ attachment.
+      #
+      # If Scribd does not have a thumbnail for this file, then
+      # Paperclip's thumbnanil is fallen back on by returning the file from
+      # <tt>attribute.to_file(:thumb)</tt>.
+      #
+      # Sample use in a controller:
+      #  render :inline => @attachment.thumbnail_file,
+      #         :content_type => 'image/jpeg'
+      def thumbnail_file(attribute)
+        doc = scribd_document_for(attribute)
+
+        if doc && doc.thumbnail_url
+          open(doc.thumbnail_url).read
+        else
+          send(attribute).to_file(:thumb).open { |f| f.read }
+        end
+      rescue Errno::ENOENT, NoMethodError # file not found or nil thumb file
+        nil
       end
 
       # Responds true if the conversion is complete for the given +attribute+ --
