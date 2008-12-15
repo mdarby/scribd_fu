@@ -36,7 +36,7 @@ module ScribdFu
     end
 
     # Marks the given +attribute+ as a scribdable document file. If +attribute+
-    # is nil, assumes this is an +attachment_fu+ model and deals with the setup
+    # is nil, assumes this is an Attachment_fu model and deals with the setup
     # accordingly; otherwise, assumes a +paperclip+ model and sets up scribding
     # related to the particular given attribute.
     def has_scribdable_attachment(attribute = nil)

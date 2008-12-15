@@ -1,14 +1,14 @@
 module ScribdFuHelper
   # Displays the scribd object for the attachment on the given +object+. If
   # +alt_text_or_attribute+ is given, then it will be used as the alternate text
-  # for an +attachment_fu+ model, or as the attribute name for a Paperclip
+  # for an Attachment_fu model, or as the attribute name for a Paperclip
   # model. If you want to specify alternate text for a Paperclip model, use the
   # last parameter, +alt_text_if_paperclip+.
   #
   # If you are using Paperclip, you _must_ specify +alt_text_or_attribute+ as
   # the attribute on which the scribd object exists.
   #
-  # For example, using +attachment_fu+:
+  # For example, using Attachment_fu:
   #  <%= display_scribd document %>
   #  <%= display_scribd document, 'You need Flash to view this document' %>
   #

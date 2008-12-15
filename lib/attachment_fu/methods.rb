@@ -69,7 +69,7 @@ module ScribdFu
 
       # Returns a URL for a thumbnail for this model's attachment.
       #
-      # If Scribd does not provide a thumbnail URL, then +attachment_fu+'s
+      # If Scribd does not provide a thumbnail URL, then Attachment_fu's
       # thumbnail is fallen back on by returning the value of
       # <tt>public_filename(:thumb)</tt>.
       #
@@ -83,8 +83,8 @@ module ScribdFu
       # Returns the actual image data of a thumbnail for this model's
       # attachment.
       #
-      # If Scribd does not have a thumbnail for this file, then
-      # +attachment_fu+'s thumbnanil is fallen back on by returning the file at
+      # If Scribd does not have a thumbnail for this file, then Attachment_fu's
+      # thumbnanil is fallen back on by returning the file at
       # <tt>full_filename(:thumb)</tt>.
       #
       # Sample use in a controller:
