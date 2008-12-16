@@ -25,14 +25,21 @@ Scribd_fu depends on rscribd, so installing it as a gem should also pull in
 rscribd. First, add Scribd_fu to your list of gems in
 <tt>config/environment.rb</tt>:
 
-<pre>config.gem 'mdarby-scribd_fu', :lib => 'scribd_fu',
-                               :source => 'http://gems.github.com'</pre>
+<pre>config.gem 'mdarby-scribd_fu', :lib => 'scribd_fu'</pre>
+
+Note that this will only work if you have http://gems.github.com in your list of
+gem sources:
+
+<pre>$ gem source -a http://gems.github.com</pre>
 
 Then run:
 
 <pre>$ sudo rake gems:install</pre>
 
-To install it and the rscribd gem.
+To install it and the rscribd gem. If you don't add github as a gem source, you
+can add the <tt>:source</tt> option to the <tt>config.gem</tt> call; however,
+this means you will have to separately require the rscribd gem, since using
+<tt>:source</tt> will not search for the rscribd gem in your regular sources.
 
 Then, install either Paperclip or Attachment_fu.
 
