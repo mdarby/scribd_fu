@@ -9,8 +9,10 @@ Gem::Specification.new do |s|
   s.has_rdoc = false
   s.authors  = ["Matt Darby"]
   s.files    = ['init.rb', 'install.rb', 'uninstall.rb', 'MIT-LICENSE', 'Rakefile',
-                'README', 'scribd.yml.example', 'lib/scribd_fu.rb',
-                'lib/scribd_fu_helper.rb', 'lib/attachment_fu/methods.rb',
-                'lib/paperclip/methods.rb', 'rails/init.rb']
+                'README',  'lib/scribd_fu.rb', 'lib/scribd_fu_helper.rb',
+                'lib/attachment_fu/methods.rb', 'lib/paperclip/methods.rb',
+                'rails/init.rb',
+                'generators/scribd_config/scribd_config_generator.rb',
+                'generators/scribd_config/scribd.yml']
   s.add_dependency 'rscribd'
 end
