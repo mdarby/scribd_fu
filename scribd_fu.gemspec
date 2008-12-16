@@ -13,6 +13,6 @@ Gem::Specification.new do |s|
                 'lib/attachment_fu/methods.rb', 'lib/paperclip/methods.rb',
                 'rails/init.rb',
                 'generators/scribd_config/scribd_config_generator.rb',
-                'generators/scribd_config/scribd.yml']
+                'generators/scribd_config/templates/scribd.yml']
   s.add_dependency 'rscribd'
 end
