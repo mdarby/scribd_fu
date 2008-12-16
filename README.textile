@@ -65,8 +65,8 @@ h3. Shared steps
 
 * Sign up for Scribd (it's totally free) at
   http://www.scribd.com/publisher/signup_api.
-* Copy the scribd_fu/scribd.yml.example file from the gem to config/scribd.yml
-  and fill it out with your Scribd login credentials.
+* Run <tt>script/generate scribd_config</tt> and fill out the new
+  config/scribd.yml file with your Scribd login credentials.
 
 h3. Attachment_fu
 
