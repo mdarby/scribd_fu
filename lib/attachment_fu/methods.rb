@@ -45,7 +45,7 @@ module ScribdFu
           end
         end
       end
-      alias_method :destroy_scribd_documents, :destroy_scribd_document
+      alias_method :destroy_scribd_document, :destroy_scribd_documents
 
       # Uploads the attachment to scribd for processing.. This is called
       # +before_validation+, as set up by ScribdFu::ClassMethods#extended.
