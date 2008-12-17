@@ -87,7 +87,7 @@ module ScribdFu
       if self.respond_to?(:is_public) && self.is_public != nil
         scribd_access = self.is_public ? 'public' : 'private'
       else
-        scribd_access = scribd_config[:scribd]['access']
+        scribd_access = scribd_config['access']
       end
 
       scribd_access
