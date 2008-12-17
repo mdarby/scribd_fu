@@ -17,7 +17,7 @@ module ScribdFuHelper
   #  <%= display_scribd user, :biography, 'You need Flash for biographies." %>
   def display_scribd(object, alt_text_or_attribute = '', alt_text_if_paperclip = nil)
     # Resolve the right scribd ID, access key, and alt text.
-    if object.method_defined?("scribd_id")
+    if object.respond_to?("scribd_id")
       scribd_id = object.scribd_id
       scribd_ak = object.scribd_access_key
 
@@ -33,7 +33,7 @@ module ScribdFuHelper
       <script type=\"text/javascript\" src=\"http://www.scribd.com/javascripts/view.js\"></script>
       <div id=\"embedded_flash\">#{alt_text}</div>
       <script type=\"text/javascript\">
-        var scribd_doc = scribd.Document.getDoc(#{scribd_id}, '#{scribd_access_key}');
+        var scribd_doc = scribd.Document.getDoc(#{scribd_id}, '#{scribd_ak}');
         scribd_doc.write(\"embedded_flash\");
       </script>
     END
