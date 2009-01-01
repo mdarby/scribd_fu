@@ -39,7 +39,7 @@ module ScribdFuHelper
     # (only if they are valid).
     param_includes = options[:params].collect do |param, value|
       "scribd_doc.addParam('#{param}', '#{value}');" if AVAILABLE_JS_PARAMS.include?(param)
-    end.compact.join("\nt")
+    end.compact.join("\n")
 
     <<-END
       <script type="text/javascript" src="http://www.scribd.com/javascripts/view.js"></script>
