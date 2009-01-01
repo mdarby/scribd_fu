@@ -1,4 +1,10 @@
 module ScribdFuHelper
+  # Available parameters for the JS API
+  # http://www.scribd.com/publisher/api/api?method_name=Javascript+API
+  AVAILABLE_JS_PARAMS = [ :height, :width, :page, :my_user_id, :search_query,
+                          :jsapi_version, :disable_related_docs, :mode, :auto_size ]
+  
+
   # Displays the scribd object for the attachment on the given +object+. If
   # +alt_text_or_attribute+ is given, then it will be used as the alternate text
   # for an Attachment_fu model, or as the attribute name for a Paperclip
@@ -29,12 +35,19 @@ module ScribdFuHelper
       alt_text = alt_text_if_paperclip
     end
 
+    # Collect a set of addParam statements to set up JS parameters for the scribd document
+    # (only if they are valid).
+    param_includes = options[:params].collect do |param, value|
+      "scribd_doc.addParam('#{param}', '#{value}');" if AVAILABLE_JS_PARAMS.include?(param)
+    end.compact.join("\nt")
+
     <<-END
-      <script type=\"text/javascript\" src=\"http://www.scribd.com/javascripts/view.js\"></script>
-      <div id=\"embedded_flash\">#{alt_text}</div>
-      <script type=\"text/javascript\">
+      <script type="text/javascript" src="http://www.scribd.com/javascripts/view.js"></script>
+      <div id="embedded_flash">#{alt_text}</div>
+      <script type="text/javascript">
         var scribd_doc = scribd.Document.getDoc(#{scribd_id}, '#{scribd_ak}');
-        scribd_doc.write(\"embedded_flash\");
+        #{param_includes}
+        scribd_doc.write("embedded_flash");
       </script>
     END
   end
