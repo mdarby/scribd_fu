@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name     = "scribd_fu"
-  s.version  = "1.2.1"
-  s.date     = "2009-01-01"
+  s.version  = "1.2.2"
+  s.date     = "2009-02-13"
   s.summary  = "Quick and easy interactions with Scribd's iPaper service"
   s.email    = "matt@matt-darby.com"
   s.homepage = "http://github.com/mdarby/scribd_fu/tree/master"
