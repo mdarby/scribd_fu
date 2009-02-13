@@ -35,11 +35,15 @@ module ScribdFuHelper
       alt_text = alt_text_if_paperclip
     end
 
-    # Collect a set of addParam statements to set up JS parameters for the scribd document
-    # (only if they are valid).
-    param_includes = options[:params].collect do |param, value|
-      "scribd_doc.addParam('#{param}', '#{value}');" if AVAILABLE_JS_PARAMS.include?(param)
-    end.compact.join("\n")
+    begin
+      # Collect a set of addParam statements to set up JS parameters for the scribd document
+      # (only if they are valid).
+      param_includes = options[:params].collect do |param, value|
+        "scribd_doc.addParam('#{param}', '#{value}');" if AVAILABLE_JS_PARAMS.include?(param)
+      end.compact.join("\n")
+    rescue
+      # Where is 'options' coming from???
+    end
 
     <<-END
       <script type="text/javascript" src="http://www.scribd.com/javascripts/view.js"></script>
