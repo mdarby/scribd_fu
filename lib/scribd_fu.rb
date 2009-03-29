@@ -12,6 +12,7 @@ module ScribdFu
     'application/vnd.ms-excel',
     'application/postscript',
     'text/plain',
+    'text/rtf',
     'application/rtf',
     'application/vnd.oasis.opendocument.text',
     'application/vnd.oasis.opendocument.presentation',
