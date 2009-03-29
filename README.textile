@@ -1,191 +1,64 @@
 h1. Scribd_fu
 
-A Ruby on Rails plugin that streamlines interaction with the Scribd service
-(scribd.com), and even works Attachment_fu or Paperclip!
+A Ruby on Rails plugin that streamlines interaction with Scribd.com's iPaper service, and works along side of either Attachment_fu or Paperclip
 
+h1. Big Changes! v2.0 OMGZ!
+
+Please make sure to read below if you're using an older version of ScribdFu. Pretty much everything has changed. Don't fret, it's now easier and cleaner. ScribdFu has been taken out into the backyard and given a thorough scrubbing. It's now lean, mean, fully tested, and works beautifully with Attachment_fu, Paperclip, and Amazon's S3 service.
 
 h2. What it does
 
-Scribd_fu hides out in the shadows like a document converting ninja, just
-waiting to process your data into a convenient Flash format (like YouTube) with
-the help of the black majick of Scribd.com. Imagine embedding huge documents
-right inline with your web UI, no downloading, no necessary programs on the
-client side (except for Flash) to view your data. It's pretty damned cool.
-
+Scribd_fu hides out in the shadows like a document converting ninja, just waiting to process your data into a convenient Flash format (like YouTube) with the help of the black majick of Scribd.com. Imagine embedding documents inline with your web UI &mdash; no downloading, no required programs on the client side (except for Flash) to view your data. It's pretty damned cool, and free to boot!
 
 h2. Requirements
 
-Scribd_fu requires the rscribd gem for talking to scribd, and either the wicked
-awesome Attachment_fu plugin or the equally awesome Paperclip plugin.
+Scribd_fu requires the rscribd gem via @sudo gem install rscribd@ (along with either the Attachment_fu plugin or the Paperclip gem)
 
+h2. How to Install
 
-h2. How to Install & Use
+h3. ScribdFu requires a base plugin
 
-Scribd_fu depends on rscribd, so installing it as a gem should also pull in
-rscribd. First, add Scribd_fu to your list of gems in
-<tt>config/environment.rb</tt>:
+ScribdFu is awesome, but it needs help from either "Attachment_fu":http://github.com/technoweenie/attachment_fu/tree/master or "Paperclip":http://github.com/thoughtbot/paperclip/tree/master
 
-<pre>config.gem 'mdarby-scribd_fu', :lib => 'scribd_fu'</pre>
+h3. Install ScribdFu
 
-Note that this will only work if you have http://gems.github.com in your list of
-gem sources:
+<pre>sudo gem install mdarby-scribd_fu --source 'http://gems.github.com'</pre>
 
-<pre>$ gem source -a http://gems.github.com</pre>
+h3. Add ScribdFu to your environment.rb
 
-Then run:
-
-<pre>$ sudo rake gems:install</pre>
-
-To install it and the rscribd gem. If you don't add github as a gem source, you
-can add the <tt>:source</tt> option to the <tt>config.gem</tt> call; however,
-this means you will have to separately require the rscribd gem, since using
-<tt>:source</tt> will not search for the rscribd gem in your regular sources.
-
-Then, install either Paperclip or Attachment_fu.
-
-h3. Attachment_fu
-
-If you want to install Attachment_fu, you should probably use the git
-repository on github:
-
-<pre>$ script/plugin install git://github.com/technoweenie/attachment_fu.git</pre>
-
-h3. Paperclip
-
-If you'd rather use Paperclip (the most important advantage, with respect to
-Scribd_fu, will be being able to have more than one document-related column in a
-single model), you should probably require it as a gem dependency rather than
-using it in plugin form. In Rails 2.1 or greater:
-
-<pre>config.gem 'paperclip'</pre>
-
-Then run:
-
-<pre>$ rake gems:install</pre>
-
-To install it.
-
+<pre>config.gem 'mdarby-scribd_fu', :lib => 'scribd_fu', :source => 'http://gems.github.com'</pre>
 
 h2. How to Use
 
-h3. Shared steps
+* Sign up for "Scribd.com's API access":http://www.scribd.com/developers/signup_api (it's totally free)
 
-* Sign up for Scribd (it's totally free) at
-  http://www.scribd.com/publisher/signup_api.
-* Run <tt>script/generate scribd_config</tt> and fill out the new
-  config/scribd.yml file with your Scribd login credentials.
+* Run @./script/generate scribd_fu_config@ and fill out @config/scribd_fu.yml@ file with your Scribd account info.
 
-h3. Attachment_fu
+* If you're using AttachmentFu, add @has_ipaper_and_uses 'AttachmentFu'@ to your model that uses ScribdFu
 
-Enter the below line into any attachment_fu-using model whose attachment you'd like to
-Scribdify:
+* If you're using Paperclip, add @has_ipaper_and_uses 'Paperclip'@ to your model that uses ScribdFu
 
-<pre>acts_as_scribd_document</pre>
+* Add the following fields into a new migration for the target model:
 
-Add the following fields into a new migration for the target model (and run the
-migration!):
+<pre>
+  t.integer :ipaper_id
+  t.string  :ipaper_access_key
+</pre>
 
-<pre>t.integer :scribd_id
-t.string  :scribd_access_key</pre>
+Scribd_fu will use these to track Scribd-related information.
 
-Scribd_fu will use these to track scribd-related information.
+Now, when you upload a file to that model, Scribd_fu will automatically handle the Scribd side of things for you. Files are uploaded to Scribd after the model is saved. No muss, no fuss. Scribd's conversion of your document is usally quite fast, but if you want a contingency plan, the @conversion_processing?@, @conversion_complete?@, @conversion_successful?@, and @conversion_error?@ instance methods can be used to determine the conversion status of the document.
 
-Now, when you upload a file to that model, Scribd_fu will automatically handle
-the scribd side of things for you. No muss, no fuss. Files are uploaded to
-scribd when the model is saved. If the file fails to upload to scribd, the model
-save will fail.
+h2. Viewing the iPaper Document
 
-Scribd_fu also provides the <tt>validates_as_scribd_document</tt> validation,
-which verifies that the document's information is being saved correctly (i.e.,
-that the <tt>content_type</tt>, <tt>scribd_id</tt>, and
-<tt>scribd_access_key</tt> are present) and that the attachment is scribdable to
-begin with (that is to say, that the content type of the file is a scribdable
-content type).
-
-Note that Scribd_fu will only upload the file to Scribd. Scribd then has to
-convert it to their iPaper format. Usually this is a pretty fast operation, but
-if you want to be safe or have a contingency plan in case someone tries to
-access the document and it isn't converted yet, the set of methods
-<tt>conversion_complete?</tt>, <tt>conversion_successful?</tt>, and
-<tt>conversion_error?</tt> can be used to determine the current conversion
-status of the document. Also note that if you try to display a file that hasn't
-been converted to scribd yet, the iPaper viewer will actually say that it is
-still converting complete with a spinner, so these methods will often not be
-necessary.
-
-To view a Scribd document, just throw the below code into your view (where
-<tt>@document</tt> is an object of your Scribd/Attachment_fu model):
-<pre><%= display_scribd(@document) %></pre>
-That's it!
-
-h3. Paperclip
-
-For each attachment that you want to be scribdable, mark it using the
-<tt>has_scribdable_attachment</tt> method. For example, if I had the line:
-
-<pre>has_attached_file :document</pre>
-
-And I wanted the <tt>document</tt> attachment to be scribdable, I would add:
-
-<pre>has_scribdable_attachment :document</pre>
-
-In addition, you have to add two columns for each scribdable attachment. These
-are <tt>_scribd_id</tt> and <tt>_scribd_access_key</tt>, both prefixed by the
-attachment name.  For the above example, we would have the following migration
-statements:
-
-<pre>t.integer :document_scribd_id
-t.string  :document_scribd_access_key</pre>
-
-Scribdable attachments can also be validated using the
-<tt>validates_attachment_scribdability</tt> validation:
-
-<pre>validates_attachment_scribdability :document</pre>
-
-This validation checks that the content type, scribd id, and access key are all
-available, and it verifies that the content type is a scribdable content type.
-
-As mentioned in the Attachment_fu section, Scribd_fu will only upload the file
-to Scribd. Scribd then has to do the actual conversion to iPaper. For tracking
-the status of this conversion, you have three methods, each of which take the
-attachment whose status you want:
-
-* <tt>conversion_complete?</tt> -- e.g.,
-  <tt>model.conversion_complete?(:document)</tt>
-* <tt>conversion_successful?</tt> -- e.g.,
-  <tt>model.conversion_successful?(:document)</tt>
-* <tt>conversion_error?</tt> -- e.g.,
-  <tt>model.conversion_error?(:document)</tt>
-
-Also note that if you try to display a file that hasn't been converted to scribd
-yet, the iPaper viewer will actually say that it is still converting with a
-spinner, so these methods will often not be necessary.
-
-To view a Scribd document, just throw the below code into your view (where
-<tt>@model</tt> is an object of your Scribd/Paperclip model, and
-<tt>document</tt> is the name of the scribdable attachment):
-
-<pre><%= display_scribd(@model, :document) %></pre>
-
-That's it!
-
+Just add @<%= document.display_ipaper %>@ into your view (where @document@ is an object of your ScribdFu model). That's it!
 
 h2. Access
 
-You can set the default access on all documents by setting the 'access' key in
-the scribd.yml file to either 'private' or 'public'.
-
-You can also override the default access level and control access on a
-per-document basis by setting the 'is_public' attribute to either true or false.
-If this column is not defined, the default option in the scribd.yml will be
-used.
-
-Please note that setting the access level only works before the document is
-initially uploaded to Scribd.
-
+You can set the access level on all documents by setting the @access@ key in the scribd_fu.yml file to either 'private' or 'public'. ScribdFu assumes that you'd like to keep your documents private.
 
 h2. About the Author
 
-My name is Matt Darby. I’m a 29 year old professional Web Developer and IT Manager. I am the IT Manager and Lead Web Developer at Dynamix Engineering and recently earned a Master’s Degree in Computer Science from Franklin University in Columbus, OH.
+My name is "Matt Darby.":http://blog.matt-darby.com I’m an IT Manager and pro-web-dev at for "Dynamix Engineering":http://dynamix-ltd.com and hold a Master’s Degree in Computer Science from "Franklin University":http://www.franklin.edu in sunny "Columbus, OH.":http://en.wikipedia.org/wiki/Columbus,_Ohio
 
-Feel free to check out my "blog":http://blgo.matt-darby.com or to "recommend me":http://workingwithrails.com
+Feel free to check out my "blog":http://blog.matt-darby.com or "recommend me":http://www.workingwithrails.com/person/10908-matt-darby
