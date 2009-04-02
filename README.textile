@@ -32,7 +32,7 @@ h2. How to Use
 
 * Sign up for "Scribd.com's API access":http://www.scribd.com/developers/signup_api (it's totally free)
 
-* Run @./script/generate scribd_fu_config@ and fill out @config/scribd_fu.yml@ file with your Scribd account info.
+* Run @./script/generate scribd_fu@ and fill out @config/scribd_fu.yml@ file with your Scribd account info.
 
 * If you're using AttachmentFu, add @has_ipaper_and_uses 'AttachmentFu'@ to your model that uses ScribdFu
 
