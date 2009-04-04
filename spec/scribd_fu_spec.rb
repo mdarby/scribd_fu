@@ -258,17 +258,21 @@ describe "Viewing an iPaper document" do
   end
   
   it "should return this HTML by default" do
-    @document.display_ipaper.should == "        <script type=\"text/javascript\" src=\"http://www.scribd.com/javascripts/view.js\"></script>\n        <div id=\"embedded_flash\"></div>\n        <script type=\"text/javascript\">\n          var scribd_doc = scribd.Document.getDoc(doc_id, 'access_key');\n          \n          scribd_doc.write(\"embedded_flash\");\n        </script>\n"
+    @document.display_ipaper.gsub(/\s{2,}/, "").should == "<script type=\"text/javascript\" src=\"http://www.scribd.com/javascripts/view.js\"></script><div id=\"embedded_flash\"></div><script type=\"text/javascript\">var scribd_doc = scribd.Document.getDoc(doc_id, 'access_key');scribd_doc.write(\"embedded_flash\");</script>\n"
   end
   
   it "should allow custom Javascript params" do
     options = {:height => 100, :width => 100}
-    @document.display_ipaper(options).should == "        <script type=\"text/javascript\" src=\"http://www.scribd.com/javascripts/view.js\"></script>\n        <div id=\"embedded_flash\"></div>\n        <script type=\"text/javascript\">\n          var scribd_doc = scribd.Document.getDoc(doc_id, 'access_key');\n          scribd_doc.addParam('width', '100');\nscribd_doc.addParam('height', '100');\n          scribd_doc.write(\"embedded_flash\");\n        </script>\n"
+    
+    @document.display_ipaper(options).should =~ /.*scribd_doc\.addParam\('height', '100'\);.*/
+    @document.display_ipaper(options).should =~ /.*scribd_doc\.addParam\('width', '100'\);.*/
   end
   
   it "should allow not allow crazy custom Javascript params" do
     options = {:some_dumb_setting => 100, :width => 100}
-    @document.display_ipaper(options).should == "        <script type=\"text/javascript\" src=\"http://www.scribd.com/javascripts/view.js\"></script>\n        <div id=\"embedded_flash\"></div>\n        <script type=\"text/javascript\">\n          var scribd_doc = scribd.Document.getDoc(doc_id, 'access_key');\n          scribd_doc.addParam('width', '100');\n          scribd_doc.write(\"embedded_flash\");\n        </script>\n"
+    
+    @document.display_ipaper(options).should =~ /.*scribd_doc\.addParam\('width', '100'\);.*/
+    @document.display_ipaper(options).should_not =~ /.*scribd_doc\.addParam\('some_dumb_setting', '100'\);.*/
   end
   
 end
