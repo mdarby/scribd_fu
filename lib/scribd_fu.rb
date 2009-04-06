@@ -62,7 +62,7 @@ module ScribdFu
     # Upload a file to Scribd
     def upload(obj, file_path)
       begin
-        res = scribd_user.upload(:file => "#{file_path}", :access => access_level)
+        res = scribd_user.upload(:file => escape(file_path), :access => access_level)
         obj.update_attributes({:ipaper_id => res.doc_id, :ipaper_access_key => res.access_key})
       rescue
         raise ScribdFuUploadError, "Sorry, but #{obj.class} ##{obj.id} could not be uploaded to Scribd"
@@ -94,6 +94,11 @@ module ScribdFu
       rescue
         raise ScribdFuError, "Scribd Document ##{id} not found!"
       end
+    end
+
+    # Replace spaces with '%20' (needed by Paperclip models).
+    def escape(str)
+      str.gsub(' ', '%20')
     end
 
   end

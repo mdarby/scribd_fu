@@ -35,7 +35,7 @@ module ScribdFu
       # stored on S3, this is a full S3 URI, while it is a full path to the
       # local file if the file is stored locally.
       def file_path
-        if attached_file.url =~ /^https{0,1}:\/\/s3.amazonaws.com$/
+        if attached_file.url =~ /^https{0,1}:\/\/s3.amazonaws.com/
           attached_file.url
         else
           attached_file.path

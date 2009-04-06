@@ -28,7 +28,7 @@ module ScribdFu
 
       # Yields the correct path to the file, either the local filename or the S3 URL.
       def file_path
-        if public_filename.starts_with?("http://s3.amazonaws.com/")
+        if public_filename =~ /^https{0,1}:\/\/s3.amazonaws.com/
           public_filename
         else
           "#{RAILS_ROOT}/public#{public_filename}"

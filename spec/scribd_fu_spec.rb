@@ -57,7 +57,16 @@ describe "An AttachmentFu model" do
 
         describe "and is scribdable?" do
           before do
-            @document.stub!(:scribdable? => true)
+            @document.stub!(:update_attributes)
+          end
+
+          describe "and has spaces in the filename" do
+            it "should sanitize the file path" do
+              res = mock('response', :doc_id => 1, :access_key => "ASDF")
+              @scribd_user.should_receive(:upload).with(:file => "some%20filename%20with%20spaces", :access => 'access').and_return(res)
+              ScribdFu::upload(@document, "some filename with spaces")
+            end
+            
           end
 
           describe "and uploading to Scribd succeeded" do
@@ -162,12 +171,25 @@ describe "A Paperclip model" do
       describe "that was just created" do
         before do
           @attachment.attributes = {:ipaper_id => nil, :ipaper_access_key => nil, :attachment_content_type => "application/pdf"}
-          @attachment.stub!(:file_path => "/path/to/somewhere")
         end
 
         describe "and is scribdable?" do
           before do
             @attachment.stub!(:scribdable? => true)
+          end
+
+          describe "and has spaces in the filename" do
+            before do
+              @attached_file.stub!(:path => "/path/to/somewhere with spaces.pdf")
+              @attachment.stub!(:update_attributes)
+            end
+            
+            it "should sanitize the file path" do
+              res = mock('response', :doc_id => 1, :access_key => "ASDF")
+              @scribd_user.should_receive(:upload).with(:file => "/path/to/somewhere%20with%20spaces.pdf", :access => 'access').and_return(res)
+              ScribdFu::upload(@attachment, "/path/to/somewhere with spaces.pdf")
+            end
+            
           end
 
           describe "and uploading to Scribd succeeded" do
