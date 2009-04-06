@@ -57,6 +57,10 @@ h2. Access
 
 You can set the access level on all documents by setting the @access@ key in the scribd_fu.yml file to either 'private' or 'public'. ScribdFu assumes that you'd like to keep your documents private.
 
+h2. Help
+
+Add a ticket to "ScribdFu's Lighthouse Account":http://mdarby.lighthouseapp.com/projects/28697-scribdfu/overview
+
 h2. About the Author
 
 My name is "Matt Darby.":http://blog.matt-darby.com I’m an IT Manager and pro-web-dev at for "Dynamix Engineering":http://dynamix-ltd.com and hold a Master’s Degree in Computer Science from "Franklin University":http://www.franklin.edu in sunny "Columbus, OH.":http://en.wikipedia.org/wiki/Columbus,_Ohio
