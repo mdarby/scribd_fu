@@ -283,6 +283,10 @@ describe "Viewing an iPaper document" do
     @document.display_ipaper.gsub(/\s{2,}/, "").should == "<script type=\"text/javascript\" src=\"http://www.scribd.com/javascripts/view.js\"></script><div id=\"embedded_flash\"></div><script type=\"text/javascript\">var scribd_doc = scribd.Document.getDoc(doc_id, 'access_key');scribd_doc.write(\"embedded_flash\");</script>\n"
   end
   
+  it "should allow custom alt text" do
+    @document.display_ipaper(:alt => "something").should =~ /.*<div id="embedded_flash">something<\/div>.*/
+  end
+  
   it "should allow custom Javascript params" do
     options = {:height => 100, :width => 100}
     
