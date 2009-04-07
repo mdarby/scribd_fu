@@ -29,6 +29,9 @@ module ScribdFu
     'application/vnd.openxmlformats-officedocument.wordprocessingml.template'
   ]
 
+  # RegExp that matches AWS S3 URLs
+  S3 = /^https?:\/\/s3.amazonaws.com/
+
   # Available parameters for the JS API
   # http://www.scribd.com/publisher/api/api?method_name=Javascript+API
   Available_JS_Params = [ :height, :width, :page, :my_user_id, :search_query,
@@ -221,11 +224,9 @@ module ScribdFu
 
     # Display the iPaper document in a view
     def display_ipaper(options = {})
-      alt = options.has_key?(:alt) ? options[:alt] : ""
-
       <<-END
         <script type="text/javascript" src="http://www.scribd.com/javascripts/view.js"></script>
-        <div id="embedded_flash">#{alt}</div>
+        <div id="embedded_flash">#{options.delete(:alt)}</div>
         <script type="text/javascript">
           var scribd_doc = scribd.Document.getDoc(#{ipaper_id}, '#{ipaper_access_key}');
           #{js_params(options)}
