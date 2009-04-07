@@ -5,7 +5,7 @@ module ScribdFu
     end
 
     module InstanceMethods
-      
+
       def self.included(base)
         base.extend ClassMethods
       end
@@ -15,14 +15,7 @@ module ScribdFu
         self.send("#{prefix}_content_type")
       end
 
-      # Returns a URL for a thumbnail for the specified +attribute+ attachment.
-      #
-      # If Scribd does not provide a thumbnail URL, then Paperclip's thumbnail
-      # is fallen back on by returning the value of
-      # <tt>attribute.url(:thumb)</tt>.
-      #
-      # Sample use in a view:
-      #  <%= image_tag(@attachment.thumbnail_url, :alt => @attachment.name) %>
+      # Returns a URL for a thumbnail for the attached file object.
       def thumbnail_url
         begin
           (ipaper_document && ipaper_document.thumbnail_url) || attached_file.url(:thumb)
@@ -35,11 +28,7 @@ module ScribdFu
       # stored on S3, this is a full S3 URI, while it is a full path to the
       # local file if the file is stored locally.
       def file_path
-        if attached_file.url =~ /^https{0,1}:\/\/s3.amazonaws.com/
-          attached_file.url
-        else
-          attached_file.path
-        end
+        attached_file.url =~ ScribdFu::S3 ? attached_file.url : attached_file.path
       end
 
 
