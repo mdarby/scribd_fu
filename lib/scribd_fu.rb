@@ -92,11 +92,9 @@ module ScribdFu
 
     # Load, store, and return the associated iPaper document
     def load_ipaper_document(id)
-      begin
-        @document ||= scribd_user.find_document(id)
-      rescue
-        raise ScribdFuError, "Scribd Document ##{id} not found!"
-      end
+      # Yes, catch-all rescues are bad, but the end rescue
+      # should return nil, so laziness FTW.
+      scribd_user.find_document(id) rescue nil
     end
 
     # Replace spaces with '%20' (needed by Paperclip models).

@@ -105,6 +105,10 @@ describe "An AttachmentFu model" do
             @document.save
           end
 
+          it "should not error out when deleted" do
+            lambda {@document.destroy}.should_not raise_error(ScribdFu::ScribdFuError)
+          end
+
         end
 
       end
