@@ -22,11 +22,11 @@ ScribdFu is awesome, but it needs help from either "Attachment_fu":http://github
 
 h3. Install ScribdFu
 
-<pre>sudo gem install mdarby-scribd_fu --source 'http://gems.github.com'</pre>
+<pre>sudo gem install scribd_fu --source 'http://gemcutter.com'</pre>
 
 h3. Add ScribdFu to your environment.rb
 
-<pre>config.gem 'mdarby-scribd_fu', :lib => 'scribd_fu', :source => 'http://gems.github.com'</pre>
+<pre>config.gem 'scribd_fu', :source => 'http://gemcutter.com'</pre>
 
 h2. How to Use
 
