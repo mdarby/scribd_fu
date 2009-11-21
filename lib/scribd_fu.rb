@@ -31,6 +31,7 @@ module ScribdFu
 
   # RegExp that matches AWS S3 URLs
   S3 = /^https?:\/\/s3.amazonaws.com/
+  CLOUD_FRONT = /^http:\/\/[A-Za-z0-9]*.cloudfront.net/
 
   # Available parameters for the JS API
   # http://www.scribd.com/publisher/api/api?method_name=Javascript+API

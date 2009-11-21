@@ -22,7 +22,11 @@ module ScribdFu
 
       # Yields the correct path to the file, either the local filename or the S3 URL.
       def file_path
-        public_filename =~ ScribdFu::S3 ? public_filename : "#{RAILS_ROOT}/public#{public_filename}"
+        if public_filename =~ ScribdFu::S3 || public_filename =~ ScribdFu::CLOUD_FRONT
+          public_filename
+        else
+          "#{RAILS_ROOT}/public#{public_filename}"
+        end
       end
     end
 
