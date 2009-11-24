@@ -2,10 +2,6 @@ h1. Scribd_fu
 
 A Ruby on Rails plugin that streamlines interaction with Scribd.com's iPaper service, and works along side of either Attachment_fu or Paperclip
 
-h1. Big Changes! v2.0 OMGZ!
-
-Please make sure to read below if you're using an older version of ScribdFu. Pretty much everything has changed. Don't fret, it's now easier and cleaner. ScribdFu has been taken out into the backyard and given a thorough scrubbing. It's now lean, mean, fully tested, and works beautifully with Attachment_fu, Paperclip, and Amazon's S3 service.
-
 h2. What it does
 
 Scribd_fu hides out in the shadows like a document converting ninja, just waiting to process your data into a convenient Flash format (like YouTube) with the help of the black majick of Scribd.com. Imagine embedding documents inline with your web UI &mdash; no downloading, no required programs on the client side (except for Flash) to view your data. It's pretty damned cool, and free to boot!
