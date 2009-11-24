@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.files = [
     "MIT-LICENSE",
      "README.textile",
+     "Rakefile",
      "VERSION",
      "generators/scribd_fu/scribd_fu_generator.rb",
      "generators/scribd_fu/templates/scribd_fu.yml",
