@@ -3,16 +3,18 @@ require 'rake'
 
 begin
   require 'jeweler'
-  Jeweler::Tasks.new do |gemspec|
-    gemspec.name = "Scribd_fu"
-    gemspec.summary = "A Rails gem that streamlines interactions with the Scribd service"
-    gemspec.description = "A Rails gem that streamlines interactions with the Scribd service"
-    gemspec.email = "matt@matt-darby.com"
-    gemspec.homepage = "http://github.com/mdarby/scribd_fu"
-    gemspec.authors = ["Matt Darby"]
+  Jeweler::Tasks.new do |gem|
+    gem.name = "scribd_fu"
+    gem.summary = %Q{A Rails gem that streamlines interactions with the Scribd service}
+    gem.description = %Q{A Rails gem that streamlines interactions with the Scribd service}
+    gem.email = "matt@matt-darby.com"
+    gem.homepage = "http://github.com/mdarby/scribd_fu"
+    gem.authors = ["Matt Darby"]
+    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
+  Jeweler::GemcutterTasks.new
 rescue LoadError
-  puts "Jeweler not available. Install it with: sudo gem install jeweler"
+  puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
 
 require 'rake/testtask'
@@ -36,6 +38,17 @@ rescue LoadError
 end
 
 task :test => :check_dependencies
+
+begin
+  require 'cucumber/rake/task'
+  Cucumber::Rake::Task.new(:features)
+
+  task :features => :check_dependencies
+rescue LoadError
+  task :features do
+    abort "Cucumber is not available. In order to run features, you must: sudo gem install cucumber"
+  end
+end
 
 task :default => :test
 
