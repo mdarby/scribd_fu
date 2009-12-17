@@ -14,12 +14,12 @@ Gem::Specification.new do |s|
   s.email = %q{matt@matt-darby.com}
   s.extra_rdoc_files = [
     "LICENSE",
-     "README.rdoc",
      "README.textile"
   ]
   s.files = [
     ".document",
      ".gitignore",
+     "LICENSE",
      "README.textile",
      "Rakefile",
      "VERSION",
@@ -42,9 +42,7 @@ Gem::Specification.new do |s|
   s.summary = %q{A Rails gem that streamlines interactions with the Scribd service}
   s.test_files = [
     "spec/scribd_fu_spec.rb",
-     "spec/spec_helper.rb",
-     "test/helper.rb",
-     "test/test_scribd_fu.rb"
+     "spec/spec_helper.rb"
   ]
 
   if s.respond_to? :specification_version then
