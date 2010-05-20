@@ -66,7 +66,18 @@ describe "An AttachmentFu model" do
               @scribd_user.should_receive(:upload).with(:file => "some%20filename%20with%20spaces", :access => 'access').and_return(res)
               ScribdFu::upload(@document, "some filename with spaces")
             end
-            
+          end
+
+          describe "and has a ipaper_my_user_id" do
+            before do
+              @document.stub!(:ipaper_my_user_id => '1234')
+            end
+
+            it "should pass the parameter when uploading" do
+              res = mock('response', :doc_id => 1, :access_key => "ASDF")
+              @scribd_user.should_receive(:upload).with(:file => "some_file", :access => 'access', :my_user_id => '1234').and_return(res)
+              ScribdFu::upload(@document, "some_file")
+            end
           end
 
           describe "and uploading to Scribd succeeded" do

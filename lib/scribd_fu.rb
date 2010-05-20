@@ -66,7 +66,9 @@ module ScribdFu
     # Upload a file to Scribd
     def upload(obj, file_path)
       begin
-        res = scribd_user.upload(:file => escape(file_path), :access => access_level)
+        args = { :file => escape(file_path), :access => access_level }
+        args[:my_user_id] = obj.ipaper_my_user_id if obj.ipaper_my_user_id
+        res = scribd_user.upload(args)
         obj.update_attributes({:ipaper_id => res.doc_id, :ipaper_access_key => res.access_key})
       rescue
         raise ScribdFuUploadError, "Sorry, but #{obj.class} ##{obj.id} could not be uploaded to Scribd"
@@ -113,6 +115,8 @@ module ScribdFu
       load_base_plugin(str)
 
       include InstanceMethods
+
+      attr_accessor :ipaper_my_user_id
 
       after_save :upload_to_scribd # This *MUST* be an after_save
       before_destroy :destroy_ipaper_document
