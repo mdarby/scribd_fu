@@ -69,6 +69,28 @@ describe "An AttachmentFu model" do
 
           end
 
+          context "and is destined for CloudFront" do
+            before do
+              @document.stub!(:public_filename => "http://a9.cloudfront.net/something.pdf?0000000000")
+            end
+
+            it "should return the CloudFront URL, not the local filesystem path" do
+              @document.file_path.should == "http://a9.cloudfront.net/something.pdf"
+            end
+
+          end
+
+          context "and is destined for S3" do
+            before do
+              @document.stub!(:public_filename => "http://s3.amazonaws.com/something.pdf")
+            end
+
+            it "should return the AWS URL, not the local filesystem path" do
+              @document.file_path.should == "http://s3.amazonaws.com/something.pdf"
+            end
+
+          end
+
           describe "and uploading to Scribd succeeded" do
             before do
               @scribd_response = mock('scribd_response', :doc_id => "doc_id", :access_key => "access_key")
@@ -204,6 +226,17 @@ describe "A Paperclip model" do
             it "should strip the trailing cache string before sending to Scribd" do
               @attachment.file_path.should == "http://s3.amazonaws.com/path/to/somewhere.pdf"
             end
+          end
+
+          context "and is destined for CloudFront" do
+            before do
+              @attached_file.stub!(:url => "http://a9.cloudfront.net/something.pdf?0000000000")
+            end
+
+            it "should return the CloudFront URL, not the local filesystem path" do
+              @attachment.file_path.should == "http://a9.cloudfront.net/something.pdf"
+            end
+
           end
 
           describe "and uploading to Scribd succeeded" do

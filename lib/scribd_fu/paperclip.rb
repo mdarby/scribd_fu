@@ -28,9 +28,13 @@ module ScribdFu
       # stored on S3, this is a full S3 URI, while it is a full path to the
       # local file if the file is stored locally.
       def file_path
-        path = (attached_file.url =~ ScribdFu::S3) ? attached_file.url : attached_file.path
-        pos  = path.rindex('?')
-        (pos) ? path[0, pos] : path
+        if ScribdFu::amazon_based?(attached_file.url)
+          path = attached_file.url
+        else
+          path = attached_file.path
+        end
+
+        ScribdFu::strip_cache_string(path)
       end
 
 

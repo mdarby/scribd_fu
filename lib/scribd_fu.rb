@@ -103,6 +103,18 @@ module ScribdFu
       str.gsub(' ', '%20')
     end
 
+    # See if a URL is S3 or CloudFront based
+    def amazon_based?(url)
+      url =~ S3 || url =~ CLOUD_FRONT
+    end
+
+    # Strip off any trailing "?1234567890" cache strings
+    # They cause headaches on Scribd's end.
+    def strip_cache_string(url)
+      pos = url.rindex('?')
+      (pos) ? url[0, pos] : url
+    end
+
   end
 
   module ClassMethods
