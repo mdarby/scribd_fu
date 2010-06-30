@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{scribd_fu}
-  s.version = "2.0.6"
+  s.version = "2.0.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Matt Darby"]
-  s.date = %q{2009-12-16}
+  s.date = %q{2010-06-30}
   s.description = %q{A Rails gem that streamlines interactions with the Scribd service}
   s.email = %q{matt@matt-darby.com}
   s.extra_rdoc_files = [
@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/mdarby/scribd_fu}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.7}
   s.summary = %q{A Rails gem that streamlines interactions with the Scribd service}
   s.test_files = [
     "spec/scribd_fu_spec.rb",
@@ -49,7 +49,7 @@ Gem::Specification.new do |s|
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
-    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
     else
     end
   else
