@@ -136,7 +136,6 @@ module ScribdFu
       def check_environment
         load_rscribd
         check_config
-        check_fields
       end
 
       def check_config
@@ -162,12 +161,6 @@ module ScribdFu
       def load_paperclip
         require 'scribd_fu/paperclip'
         include ScribdFu::Paperclip::InstanceMethods
-      end
-
-      # Ensure ScribdFu-centric attributes exist
-      def check_fields
-        fields = %w{ipaper_id ipaper_access_key}.inject([]){|stack, f| stack << "#{name}##{f}" unless column_names.include?(f); stack}
-        raise ScribdFuError, "These fields are missing: #{fields.to_sentence}" if fields.size > 0
       end
 
       # Load either AttachmentFu or Paperclip-specific methods
