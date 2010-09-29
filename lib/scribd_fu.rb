@@ -36,7 +36,7 @@ module ScribdFu
   # Available parameters for the JS API
   # http://www.scribd.com/publisher/api/api?method_name=Javascript+API
   Available_JS_Params = [ :height, :width, :page, :my_user_id, :search_query,
-                          :jsapi_version, :disable_related_docs, :mode, :auto_size ]
+                          :jsapi_version, :disable_related_docs, :mode, :auto_size, :hide_disabled_buttons, :hide_full_screen_button]
 
   class ScribdFuError < StandardError #:nodoc:
   end
@@ -247,7 +247,13 @@ module ScribdFu
         opt = []
 
         options.each_pair do |k, v|
-          opt << "scribd_doc.addParam('#{k}', '#{v}');" if Available_JS_Params.include?(k)
+          if Available_JS_Params.include?(k)
+            if v == true || v == false
+              opt << "scribd_doc.addParam('#{k}', #{v});"
+            else
+              opt << "scribd_doc.addParam('#{k}', '#{v}');"
+            end
+          end
         end
 
         opt.compact.join("\n")
