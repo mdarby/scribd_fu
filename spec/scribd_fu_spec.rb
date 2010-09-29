@@ -350,5 +350,10 @@ describe "Viewing an iPaper document" do
     @document.display_ipaper(options).should =~ /.*scribd_doc\.addParam\('width', '100'\);.*/
     @document.display_ipaper(options).should_not =~ /.*scribd_doc\.addParam\('some_dumb_setting', '100'\);.*/
   end
+  
+  it "should send booleans as booleans" do
+    options = {:hide_disabled_buttons => true}
+    @document.display_ipaper(options).should =~ /.*scribd_doc\.addParam\('hide_disabled_buttons', true\);.*/
+  end
 
 end
