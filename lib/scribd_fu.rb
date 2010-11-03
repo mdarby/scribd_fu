@@ -1,6 +1,6 @@
 module ScribdFu
 
-  ConfigPath = "#{RAILS_ROOT}/config/scribd_fu.yml".freeze
+  ConfigPath = "#{::Rails.root.to_s}/config/scribd_fu.yml".freeze
 
   # A list of content types supported by iPaper.
   ContentTypes = [
