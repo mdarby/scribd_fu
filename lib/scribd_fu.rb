@@ -7,6 +7,7 @@ module ScribdFu
     'application/pdf',
     'application/msword',
     'application/mspowerpoint',
+    'application/x-pptx',
     'application/vnd.ms-powerpoint',
     'application/excel',
     'application/vnd.ms-excel',
