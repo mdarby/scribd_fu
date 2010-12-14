@@ -123,7 +123,6 @@ module ScribdFu
 
       include InstanceMethods
 
-      after_save :upload_to_scribd # This *MUST* be an after_save
       before_destroy :destroy_ipaper_document
     end
 
