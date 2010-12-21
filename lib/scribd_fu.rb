@@ -187,7 +187,7 @@ module ScribdFu
 
     # Checks whether the associated file is convertable to iPaper
     def scribdable?
-      ContentTypes.include?(get_content_type) && ipaper_id.blank?
+      accepted_content_type? && ipaper_id.blank?
     end
 
     # Responds true if the conversion is converting
@@ -235,6 +235,10 @@ module ScribdFu
       END
     end
 
+    # Validates whether attachment is accepted by Scribd
+    def accepted_content_type?
+      ContentTypes.include?(get_content_type)
+    end
 
     private
 
