@@ -1,6 +1,6 @@
 module ScribdFu
 
-  ConfigPath = "#{::Rails.root.to_s}/config/scribd_fu.yml".freeze
+  ConfigPath = "config/scribd_fu.yml".freeze
 
   # A list of content types supported by iPaper.
   ContentTypes = [
@@ -80,10 +80,11 @@ module ScribdFu
 
     # Read, store, and return the ScribdFu config file's contents
     def config
-      raise ScribdFuError, "#{ConfigPath} does not exist" unless File.file?(ConfigPath)
+      path = defined?(Rails) ? File.join(Rails.root, ConfigPath) : ConfigPath
+      raise ScribdFuError, "#{path} does not exist" unless File.file?(path)
 
       # Load the config file and strip any whitespace from the values
-      @config ||= YAML.load_file(ConfigPath).each_pair{|k,v| {k=>v.to_s.strip}}.symbolize_keys!
+      @config ||= YAML.load_file(path).each_pair{|k,v| {k=>v.to_s.strip}}.symbolize_keys!
     end
 
     # Get the preferred access level for iPaper documents
@@ -265,3 +266,4 @@ end
 
 # Let's do this.
 ActiveRecord::Base.send(:include, ScribdFu) if Object.const_defined?("ActiveRecord")
+
