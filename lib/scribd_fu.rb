@@ -121,13 +121,14 @@ module ScribdFu
   module ClassMethods
 
     # Load and inject ScribdFu goodies
-    def has_ipaper_and_uses(str)
+    # opts can be :on => :create, defaults to :on => :save
+    def has_ipaper_and_uses(str, opts = {:on => :save })
       check_environment
       load_base_plugin(str)
 
       include InstanceMethods
 
-      after_save :upload_to_scribd # This *MUST* be an after_save
+      send("after_#{opts[:on]}", :upload_to_scribd) # This *MUST* be an after_save
       before_destroy :destroy_ipaper_document
     end
 
