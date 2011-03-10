@@ -97,9 +97,10 @@ describe "An AttachmentFu model" do
             end
 
             it "should pass the parameter when uploading" do
-              res = mock('response', :doc_id => 1, :access_key => "ASDF")
-              @scribd_user.should_receive(:upload).with(:file => "some_file", :access => 'access', :my_user_id => '1234').and_return(res)
-              ScribdFu::upload(@document, "some_file")
+              filename = File.join(File.dirname(__FILE__), 'sample.txt')
+              Scribd::API.instance.should_receive(:send_request).with('docs.upload', hash_including({:access => 'access', :my_user_id => '1234'})).and_return(REXML::Document.new("<rsp stat='ok'><doc_id>1</doc_id><access_key>ASDF</access_key></rsp>"))
+              Scribd::API.instance.should_receive(:send_request).with('docs.changeSettings', {:doc_ids => '1', :my_user_id => '1234'})
+              ScribdFu::upload(@document, filename)
             end
           end
 
