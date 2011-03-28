@@ -6,6 +6,7 @@ module ScribdFu
   ContentTypes = [
     'application/pdf',
     'application/msword',
+    'application/mswordtext/plainapplication/word',
     'application/mspowerpoint',
     'application/x-pptx',
     'application/vnd.ms-powerpoint',
