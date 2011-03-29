@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{scribd_fu}
-  s.version = "2.0.10"
+  s.version = "2.0.11"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Matt Darby"]
-  s.date = %q{2011-03-28}
+  s.date = %q{2011-03-29}
   s.description = %q{A Rails gem that streamlines interactions with the Scribd service}
   s.email = %q{matt@matt-darby.com}
   s.extra_rdoc_files = [
