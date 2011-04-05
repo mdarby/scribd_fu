@@ -68,6 +68,7 @@ module ScribdFu
       begin
         args = { :file => escape(file_path), :access => access_level }
         res = if obj.ipaper_my_user_id
+          scribd_user
           args[:my_user_id] = obj.ipaper_my_user_id
           Scribd::Document.create(args)
         else
