@@ -66,12 +66,12 @@ module ScribdFu
     # Upload a file to Scribd
     def upload(obj, file_path)
       begin
-        args = { :file => escape(file_path), :access => access_level }
         res = if obj.ipaper_my_user_id
           scribd_user
-          args[:my_user_id] = obj.ipaper_my_user_id
+          args = { :file => file_path, :access => access_level, :my_user_id => obj.ipaper_my_user_id }
           Scribd::Document.create(args)
         else
+          args = { :file => escape(file_path), :access => access_level }
           scribd_user.upload(args)
         end
         obj.update_attributes({:ipaper_id => res.doc_id, :ipaper_access_key => res.access_key})
