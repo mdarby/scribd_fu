@@ -356,5 +356,10 @@ describe "Viewing an iPaper document" do
     @document.display_ipaper(options).should =~ /.*scribd_doc\.addParam\('hide_disabled_buttons', true\);.*/
   end
 
+  it "should support passing in an id for the div" do
+    options = {:id => 'abc123'}
+    @document.display_ipaper(options).should =~ /id="embedded_flashabc123"/
+  end
+
 end
 
