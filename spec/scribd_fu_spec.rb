@@ -91,6 +91,19 @@ describe "An AttachmentFu model" do
 
           end
 
+          describe "and has a ipaper_my_user_id" do
+            before do
+              @document.stub!(:ipaper_my_user_id => '1234')
+            end
+
+            it "should pass the parameter when uploading" do
+              filename = File.join(File.dirname(__FILE__), 'sample.txt')
+              Scribd::API.instance.should_receive(:send_request).with('docs.upload', hash_including({:access => 'access', :my_user_id => '1234'})).and_return(REXML::Document.new("<rsp stat='ok'><doc_id>1</doc_id><access_key>ASDF</access_key></rsp>"))
+              Scribd::API.instance.should_receive(:send_request).with('docs.changeSettings', {:doc_ids => '1', :my_user_id => '1234'})
+              ScribdFu::upload(@document, filename)
+            end
+          end
+
           describe "and uploading to Scribd succeeded" do
             before do
               @scribd_response = mock('scribd_response', :doc_id => "doc_id", :access_key => "access_key")
@@ -181,7 +194,7 @@ describe "A Paperclip model" do
         has_ipaper_and_uses 'Paperclip'
       end
 
-      @attached_file = mock("attached_file", :url => "http://test.com/path/to/somewhere", :path => "/path/to/somewhere")
+      @attached_file = mock("attached_file", :url => "http://test.com/path/to/somewhere", :path => "/path/to/somewhere", :options => {})
 
       @attachment = Attachment.new
       @attachment.stub!(:prefix).and_return("attachment")
@@ -221,6 +234,7 @@ describe "A Paperclip model" do
           context "and it was uploaded to S3" do
             before do
               @attached_file.stub!(:url => "http://s3.amazonaws.com/path/to/somewhere.pdf?0000000000")
+              @attached_file.stub!(:options => {:storage => :s3})
             end
 
             it "should strip the trailing cache string before sending to Scribd" do
@@ -231,6 +245,7 @@ describe "A Paperclip model" do
           context "and is destined for CloudFront" do
             before do
               @attached_file.stub!(:url => "http://a9.cloudfront.net/something.pdf?0000000000")
+              @attached_file.stub!(:options => {:storage => :s3})
             end
 
             it "should return the CloudFront URL, not the local filesystem path" do

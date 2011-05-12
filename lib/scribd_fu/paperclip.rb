@@ -28,7 +28,7 @@ module ScribdFu
       # stored on S3, this is a full S3 URI, while it is a full path to the
       # local file if the file is stored locally.
       def file_path
-        if ScribdFu::amazon_based?(attached_file.url)
+        if attached_file.options[:storage] == :s3
           if attached_file.instance_variable_get(:@s3_permissions) == "authenticated-read"
             return attached_file.expiring_url(60)
           else
