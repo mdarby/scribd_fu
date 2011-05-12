@@ -1,6 +1,6 @@
 module ScribdFu
 
-  ConfigPath = "#{::Rails.root.to_s}/config/scribd_fu.yml".freeze
+  ConfigPath = "config/scribd_fu.yml".freeze
 
   # A list of content types supported by iPaper.
   ContentTypes = [
@@ -87,10 +87,11 @@ module ScribdFu
 
     # Read, store, and return the ScribdFu config file's contents
     def config
-      raise ScribdFuError, "#{ConfigPath} does not exist" unless File.file?(ConfigPath)
+      path = defined?(Rails) ? File.join(Rails.root, ConfigPath) : ConfigPath
+      raise ScribdFuError, "#{path} does not exist" unless File.file?(path)
 
       # Load the config file and strip any whitespace from the values
-      @config ||= YAML.load_file(ConfigPath).each_pair{|k,v| {k=>v.to_s.strip}}.symbolize_keys!
+      @config ||= YAML.load_file(path).each_pair{|k,v| {k=>v.to_s.strip}}.symbolize_keys!
     end
 
     # Get the preferred access level for iPaper documents
@@ -127,7 +128,8 @@ module ScribdFu
   module ClassMethods
 
     # Load and inject ScribdFu goodies
-    def has_ipaper_and_uses(str)
+    # opts can be :on => :create, defaults to :on => :save
+    def has_ipaper_and_uses(str, opts = {:on => :save })
       check_environment
       load_base_plugin(str)
 
@@ -135,7 +137,7 @@ module ScribdFu
 
       attr_accessor :ipaper_my_user_id
 
-      after_save :upload_to_scribd # This *MUST* be an after_save
+      send("after_#{opts[:on]}", :upload_to_scribd) # This *MUST* be an after_save
       before_destroy :destroy_ipaper_document
     end
 
@@ -237,13 +239,14 @@ module ScribdFu
 
     # Display the iPaper document in a view
     def display_ipaper(options = {})
+      id = options.delete(:id)
       <<-END
         <script type="text/javascript" src="http://www.scribd.com/javascripts/view.js"></script>
-        <div id="embedded_flash">#{options.delete(:alt)}</div>
+        <div id="embedded_flash#{id}">#{options.delete(:alt)}</div>
         <script type="text/javascript">
           var scribd_doc = scribd.Document.getDoc(#{ipaper_id}, '#{ipaper_access_key}');
           #{js_params(options)}
-          scribd_doc.write("embedded_flash");
+          scribd_doc.write("embedded_flash#{id}");
         </script>
       END
     end
@@ -274,3 +277,4 @@ end
 
 # Let's do this.
 ActiveRecord::Base.send(:include, ScribdFu) if Object.const_defined?("ActiveRecord")
+

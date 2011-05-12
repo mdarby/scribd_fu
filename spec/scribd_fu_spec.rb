@@ -14,7 +14,7 @@ describe "ScribdFu" do
 
   describe "that is missing a config file" do
     before do
-      File.should_receive(:file?).with("#{RAILS_ROOT}/config/scribd_fu.yml").and_return(false)
+      File.should_receive(:file?).with("config/scribd_fu.yml").and_return(false)
     end
 
     it "should raise an error" do
@@ -363,10 +363,16 @@ describe "Viewing an iPaper document" do
     @document.display_ipaper(options).should =~ /.*scribd_doc\.addParam\('width', '100'\);.*/
     @document.display_ipaper(options).should_not =~ /.*scribd_doc\.addParam\('some_dumb_setting', '100'\);.*/
   end
-  
+
   it "should send booleans as booleans" do
     options = {:hide_disabled_buttons => true}
     @document.display_ipaper(options).should =~ /.*scribd_doc\.addParam\('hide_disabled_buttons', true\);.*/
   end
 
+  it "should support passing in an id for the div" do
+    options = {:id => 'abc123'}
+    @document.display_ipaper(options).should =~ /id="embedded_flashabc123"/
+  end
+
 end
+
