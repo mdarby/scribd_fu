@@ -5,12 +5,6 @@ require 'rscribd'
 ROOT       = File.join(File.dirname(__FILE__), '..')
 RAILS_ROOT = ROOT
 
-module Rails
-  def self.root
-    ROOT
-  end
-end
-
 $LOAD_PATH << File.join(ROOT, 'lib')
 $LOAD_PATH << File.join(ROOT, 'lib', 'scribd_fu')
 

@@ -194,7 +194,7 @@ describe "A Paperclip model" do
         has_ipaper_and_uses 'Paperclip'
       end
 
-      @attached_file = mock("attached_file", :url => "http://test.com/path/to/somewhere", :path => "/path/to/somewhere")
+      @attached_file = mock("attached_file", :url => "http://test.com/path/to/somewhere", :path => "/path/to/somewhere", :options => {})
 
       @attachment = Attachment.new
       @attachment.stub!(:prefix).and_return("attachment")
@@ -234,6 +234,7 @@ describe "A Paperclip model" do
           context "and it was uploaded to S3" do
             before do
               @attached_file.stub!(:url => "http://s3.amazonaws.com/path/to/somewhere.pdf?0000000000")
+              @attached_file.stub!(:options => {:storage => :s3})
             end
 
             it "should strip the trailing cache string before sending to Scribd" do
@@ -244,6 +245,7 @@ describe "A Paperclip model" do
           context "and is destined for CloudFront" do
             before do
               @attached_file.stub!(:url => "http://a9.cloudfront.net/something.pdf?0000000000")
+              @attached_file.stub!(:options => {:storage => :s3})
             end
 
             it "should return the CloudFront URL, not the local filesystem path" do
