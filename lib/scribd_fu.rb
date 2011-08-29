@@ -1,14 +1,12 @@
 module ScribdFu
 
-  ConfigPath = "#{::Rails.root.to_s}/config/scribd_fu.yml".freeze
+  ConfigPath = "config/scribd_fu.yml".freeze
 
   # A list of content types supported by iPaper.
   ContentTypes = [
     'application/pdf',
     'application/msword',
-    'application/mswordtext/plainapplication/word',
     'application/mspowerpoint',
-    'application/x-pptx',
     'application/vnd.ms-powerpoint',
     'application/excel',
     'application/vnd.ms-excel',
@@ -67,8 +65,19 @@ module ScribdFu
 
     # Upload a file to Scribd
     def upload(obj, file_path)
-      res = scribd_user.upload(:file => escape(file_path), :access => access_level)
-      obj.update_attributes({:ipaper_id => res.doc_id, :ipaper_access_key => res.access_key})
+      begin
+        args = { :file => escape(file_path), :access => access_level }
+        res = if obj.ipaper_my_user_id
+          scribd_user
+          args[:my_user_id] = obj.ipaper_my_user_id
+          Scribd::Document.create(args)
+        else
+          scribd_user.upload(args)
+        end
+        obj.update_attributes({:ipaper_id => res.doc_id, :ipaper_access_key => res.access_key})
+      rescue
+        raise ScribdFuUploadError, "Sorry, but #{obj.class} ##{obj.id} could not be uploaded to Scribd"
+      end
     end
 
     # Delete an iPaper document
@@ -78,10 +87,11 @@ module ScribdFu
 
     # Read, store, and return the ScribdFu config file's contents
     def config
-      raise ScribdFuError, "#{ConfigPath} does not exist" unless File.file?(ConfigPath)
+      path = defined?(Rails) ? File.join(Rails.root, ConfigPath) : ConfigPath
+      raise ScribdFuError, "#{path} does not exist" unless File.file?(path)
 
       # Load the config file and strip any whitespace from the values
-      @config ||= YAML.load_file(ConfigPath).each_pair{|k,v| {k=>v.to_s.strip}}.symbolize_keys!
+      @config ||= YAML.load_file(path).each_pair{|k,v| {k=>v.to_s.strip}}.symbolize_keys!
     end
 
     # Get the preferred access level for iPaper documents
@@ -118,12 +128,16 @@ module ScribdFu
   module ClassMethods
 
     # Load and inject ScribdFu goodies
-    def has_ipaper_and_uses(str)
+    # opts can be :on => :create, defaults to :on => :save
+    def has_ipaper_and_uses(str, opts = {:on => :save })
       check_environment
       load_base_plugin(str)
 
       include InstanceMethods
 
+      attr_accessor :ipaper_my_user_id
+
+      send("after_#{opts[:on]}", :upload_to_scribd) # This *MUST* be an after_save
       before_destroy :destroy_ipaper_document
     end
 
@@ -188,7 +202,7 @@ module ScribdFu
 
     # Checks whether the associated file is convertable to iPaper
     def scribdable?
-      accepted_content_type? && ipaper_id.blank?
+      ContentTypes.include?(get_content_type) && ipaper_id.blank?
     end
 
     # Responds true if the conversion is converting
@@ -225,21 +239,18 @@ module ScribdFu
 
     # Display the iPaper document in a view
     def display_ipaper(options = {})
+      id = options.delete(:id)
       <<-END
         <script type="text/javascript" src="http://www.scribd.com/javascripts/view.js"></script>
-        <div id="embedded_flash">#{options.delete(:alt)}</div>
+        <div id="embedded_flash#{id}">#{options.delete(:alt)}</div>
         <script type="text/javascript">
           var scribd_doc = scribd.Document.getDoc(#{ipaper_id}, '#{ipaper_access_key}');
           #{js_params(options)}
-          scribd_doc.write("embedded_flash");
+          scribd_doc.write("embedded_flash#{id}");
         </script>
       END
     end
 
-    # Validates whether attachment is accepted by Scribd
-    def accepted_content_type?
-      ContentTypes.include?(get_content_type)
-    end
 
     private
 
@@ -266,3 +277,4 @@ end
 
 # Let's do this.
 ActiveRecord::Base.send(:include, ScribdFu) if Object.const_defined?("ActiveRecord")
+
