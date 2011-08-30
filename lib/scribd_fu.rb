@@ -108,7 +108,12 @@ module ScribdFu
 
     # Replace spaces with '%20' (needed by Paperclip models).
     def escape(str)
-      str.gsub(' ', '%20')
+      basename = File.basename(str, ".*")
+      File.join(File.dirname(str), "#{url_encode(basename)}#{File.extname(str)}").to_s
+    end
+
+    def url_encode(str)
+      str.to_s.gsub(/[^a-zA-Z0-9_\-.]/n){ sprintf("%%%02X", $&.unpack("C")[0]) }
     end
 
     # See if a URL is S3 or CloudFront based
