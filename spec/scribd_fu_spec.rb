@@ -63,7 +63,7 @@ describe "An AttachmentFu model" do
           describe "and has spaces in the filename" do
             it "should sanitize the file path" do
               res = mock('response', :doc_id => 1, :access_key => "ASDF")
-              @scribd_user.should_receive(:upload).with(:file => "some%20filename%20with%20spaces", :access => 'access').and_return(res)
+              @scribd_user.should_receive(:upload).with(:file => "./some%20filename%20with%20spaces", :access => 'access').and_return(res)
               ScribdFu::upload(@document, "some filename with spaces")
             end
 
@@ -217,16 +217,23 @@ describe "A Paperclip model" do
             @attachment.stub!(:scribdable? => true)
           end
 
-          describe "and has spaces in the filename" do
+          describe "and has special characters in the filename" do
             before do
               @attached_file.stub!(:path => "/path/to/somewhere with spaces.pdf")
               @attachment.stub!(:update_attributes)
             end
 
-            it "should sanitize the file path" do
+            it "should sanitize the file path spaces" do
               res = mock('response', :doc_id => 1, :access_key => "ASDF")
               @scribd_user.should_receive(:upload).with(:file => "/path/to/somewhere%20with%20spaces.pdf", :access => 'access').and_return(res)
               ScribdFu::upload(@attachment, "/path/to/somewhere with spaces.pdf")
+            end
+
+            it "should sanitize the file path accented characters" do
+              res = mock('response', :doc_id => 1, :access_key => "ASDF")
+              @scribd_user.should_receive(:upload).with(:file => "/path/to/new%20l%C3%ADder.pdf",
+                                                        :access => 'access').and_return(res)
+              ScribdFu::upload(@attachment, "/path/to/new líder.pdf")
             end
 
           end
