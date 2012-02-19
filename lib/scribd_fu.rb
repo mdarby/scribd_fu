@@ -244,9 +244,11 @@ module ScribdFu
 
     # Display the iPaper document in a view
     def display_ipaper(options = {})
-      id = options.delete(:id)
+      id = options.delete(:id) || to_param
+      view_mode = options.delete(:view_mode) || 'list'
+
       <<-END
-        <iframe class="scribd_iframe_embed" src="http://www.scribd.com/embeds/#{ipaper_id}/content?start_page=1&view_mode=slideshow&access_key=#{ipaper_access_key}" data-auto-height="true" scrolling="no" id="scribd_#{ipaper_id}" width="100%" frameborder="0"></iframe><script type="text/javascript">(function() { var scribd = document.createElement("script"); scribd.type = "text/javascript"; scribd.async = true; scribd.src = "http://www.scribd.com/javascripts/embed_code/inject.js"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(scribd, s); })();</script>
+        <iframe class="scribd_iframe_embed" src="http://www.scribd.com/embeds/#{ipaper_id}/content?start_page=1&view_mode=#{view_mode}&access_key=#{ipaper_access_key}" data-auto-height="true" scrolling="no" id="scribd_#{id}" width="100%" frameborder="0"></iframe><script type="text/javascript">(function() { var scribd = document.createElement("script"); scribd.type = "text/javascript"; scribd.async = true; scribd.src = "http://www.scribd.com/javascripts/embed_code/inject.js"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(scribd, s); })();</script>
       END
     end
 
