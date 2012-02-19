@@ -349,6 +349,7 @@ describe "Viewing an iPaper document" do
 
     @document = Document.new
     @document.attributes = {:ipaper_id => 'doc_id', :ipaper_access_key => 'access_key'}
+    @document.stub!(:to_param).and_return(5)
   end
 
   it "should return this HTML by default" do
@@ -380,8 +381,20 @@ describe "Viewing an iPaper document" do
 
   it "should support passing in an id for the div" do
     options = {:id => 'abc123'}
-    @document.display_ipaper(options).should =~ /id="embedded_flashabc123"/
+    @document.display_ipaper(options).should =~ /id="scribd_abc123"/
   end
 
+  it 'should put the ar to_param value as the embedded_id for the id param on the iframe if the id option is not passed' do
+    @document.display_ipaper.should =~ /id="scribd_5"/
+  end
+
+  it 'should support passing view_mode as an option' do
+    options = {:view_mode => 'slideshow'}
+    @document.display_ipaper(options).should =~ /view_mode=slideshow/
+  end
+
+  it 'should default to list if not passing view_mode as an option' do
+    @document.display_ipaper.should =~ /view_mode=list/
+  end
 end
 
