@@ -252,26 +252,6 @@ module ScribdFu
       END
     end
 
-
-    private
-
-      # Check and collect any Javascript params that might have been passed in
-      def js_params(options)
-        opt = []
-
-        options.each_pair do |k, v|
-          if Available_JS_Params.include?(k)
-            if v == true || v == false
-              opt << "scribd_doc.addParam('#{k}', #{v});"
-            else
-              opt << "scribd_doc.addParam('#{k}', '#{v}');"
-            end
-          end
-        end
-
-        opt.compact.join("\n")
-      end
-
   end
 
 end
