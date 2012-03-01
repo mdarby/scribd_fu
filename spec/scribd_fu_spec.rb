@@ -349,17 +349,22 @@ describe "Viewing an iPaper document" do
 
     @document = Document.new
     @document.attributes = {:ipaper_id => 'doc_id', :ipaper_access_key => 'access_key'}
+    @document.stub!(:to_param).and_return(5)
   end
 
   it "should return this HTML by default" do
+    pending "this is not supported because uses html5 version"
     @document.display_ipaper.gsub(/\s{2,}/, "").should == "<script type=\"text/javascript\" src=\"http://www.scribd.com/javascripts/view.js\"></script><div id=\"embedded_flash\"></div><script type=\"text/javascript\">var scribd_doc = scribd.Document.getDoc(doc_id, 'access_key');scribd_doc.write(\"embedded_flash\");</script>\n"
   end
 
   it "should allow custom alt text" do
+    pending "this is not supported because uses html5 version"
     @document.display_ipaper(:alt => "something").should =~ /.*<div id="embedded_flash">something<\/div>.*/
   end
 
   it "should allow custom Javascript params" do
+    pending "this is not supported because uses html5 version"
+    pending "this is not supported because uses html5 version. need to fix"
     options = {:height => 100, :width => 100}
 
     @document.display_ipaper(options).should =~ /.*scribd_doc\.addParam\('height', '100'\);.*/
@@ -367,6 +372,7 @@ describe "Viewing an iPaper document" do
   end
 
   it "should allow not allow crazy custom Javascript params" do
+    pending "this is not supported because uses html5 version"
     options = {:some_dumb_setting => 100, :width => 100}
 
     @document.display_ipaper(options).should =~ /.*scribd_doc\.addParam\('width', '100'\);.*/
@@ -374,14 +380,27 @@ describe "Viewing an iPaper document" do
   end
 
   it "should send booleans as booleans" do
+    pending "this is not supported because uses html5 version"
     options = {:hide_disabled_buttons => true}
     @document.display_ipaper(options).should =~ /.*scribd_doc\.addParam\('hide_disabled_buttons', true\);.*/
   end
 
   it "should support passing in an id for the div" do
     options = {:id => 'abc123'}
-    @document.display_ipaper(options).should =~ /id="embedded_flashabc123"/
+    @document.display_ipaper(options).should =~ /id="scribd_abc123"/
   end
 
+  it 'should put the ar to_param value as the embedded_id for the id param on the iframe if the id option is not passed' do
+    @document.display_ipaper.should =~ /id="scribd_5"/
+  end
+
+  it 'should support passing view_mode as an option' do
+    options = {:view_mode => 'slideshow'}
+    @document.display_ipaper(options).should =~ /view_mode=slideshow/
+  end
+
+  it 'should default to list if not passing view_mode as an option' do
+    @document.display_ipaper.should =~ /view_mode=list/
+  end
 end
 
