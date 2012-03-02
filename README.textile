@@ -1,6 +1,6 @@
 h1. OBSOLETE
 
-Check out "Sam Woodward's fork":https://github.com/shwoodard/scribd_fu
+Check out "Sam Woodard's fork":https://github.com/shwoodard/scribd_fu
 
 h1. Scribd_fu
 
