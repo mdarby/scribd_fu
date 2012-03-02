@@ -1,3 +1,7 @@
+h1. OBSOLETE
+
+Check out "Sam Woodward's fork":https://github.com/shwoodard/scribd_fu
+
 h1. Scribd_fu
 
 A Ruby on Rails plugin that streamlines interaction with Scribd.com's iPaper service, and works along side of either Attachment_fu or Paperclip
