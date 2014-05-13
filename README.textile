@@ -47,6 +47,10 @@ h2. How to Use
 
 Scribd_fu will use these to track Scribd-related information.
 
+* Finally, call @your_model.upload_to_scribd@ to send the attachment to the Scribd servers.
+
+* Optionally, you can create an @after_save@ callback to handle the last step: @after_save :upload_to_scribd@.
+
 Now, when you upload a file to that model, Scribd_fu will automatically handle the Scribd side of things for you. Files are uploaded to Scribd after the model is saved. No muss, no fuss. Scribd's conversion of your document is usally quite fast, but if you want a contingency plan, the @conversion_processing?@, @conversion_complete?@, @conversion_successful?@, and @conversion_error?@ instance methods can be used to determine the conversion status of the document.
 
 h2. Viewing the iPaper Document
